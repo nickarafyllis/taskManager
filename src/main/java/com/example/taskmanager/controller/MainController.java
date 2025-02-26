@@ -12,6 +12,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 import java.io.IOException;
 import java.util.List;
 
@@ -32,15 +35,7 @@ public class MainController {
     @FXML
     private TableColumn<Task, String> deadlineColumn;
     @FXML
-    private TextField taskTitleInput;
-    @FXML
-    private TextArea taskDescriptionInput;
-    @FXML
-    private Button addButton;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button deleteButton;
+    private TableColumn<Task, Void> editColumn;
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
 
@@ -48,20 +43,38 @@ public class MainController {
     public void initialize() {
         titleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
         descriptionColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDescription()));
-        categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCategory() != null ? data.getValue().getCategory().getName() : "No Category"));
-        priorityColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPriority() != null ? data.getValue().getPriority().getName() : "Default"));
+        categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getCategory() != null ? data.getValue().getCategory().getName() : "No Category"));
+        priorityColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getPriority() != null ? data.getValue().getPriority().getName() : "Default"));
         deadlineColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDeadline()));
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus().toString()));
 
-        refreshTaskList(); // Ensure task list loads on startup
+        // Add Edit button inside the table
+        editColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button editButton = new Button("Edit");
+
+            {
+                editButton.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    openEditTaskWindow(task);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(editButton);
+                }
+            }
+        });
+
+        refreshTaskList();
     }
 
-    public void refreshTaskList() {
-        List<Task> tasks = TaskStorage.loadTasks();
-        taskList.setAll(tasks); // Reload the task list
-        taskTable.setItems(taskList);
-        taskTable.refresh(); // Ensure the UI updates
-    }
 
     @FXML
     private void openAddTaskWindow() {
@@ -69,15 +82,16 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/add_task.fxml"));
             Parent root = loader.load();
 
-            // Get the controller and pass MainController reference
             AddTaskController addTaskController = loader.getController();
-            addTaskController.setMainController(this);
+            addTaskController.setMainController(this); // Pass the reference
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Add Task");
             stage.setScene(new Scene(root, 450, 400));
             stage.showAndWait();
+
+            refreshTaskList(); // Refresh task list after adding
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,37 +125,61 @@ public class MainController {
         }
     }
 
-    @FXML
-    private void handleEditTask() {
-        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
-        if (selectedTask == null) {
-            showAlert("Selection Error", "No task selected.");
-            return;
-        }
+    private void addEditButtonToTable() {
+        Callback<TableColumn<Task, Void>, TableCell<Task, Void>> cellFactory = new Callback<>() {
+            @Override
+            public TableCell<Task, Void> call(final TableColumn<Task, Void> param) {
+                return new TableCell<>() {
+                    private final Button editButton = new Button("Edit");
 
-        selectedTask.setTitle(taskTitleInput.getText());
-        selectedTask.setDescription(taskDescriptionInput.getText());
-        taskTable.refresh();  // Update UI
-        TaskStorage.saveTasks(taskList);  // Save changes
+                    {
+                        editButton.setOnAction(event -> {
+                            Task task = getTableView().getItems().get(getIndex());
+                            openEditTaskWindow(task);
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(new HBox(editButton));
+                        }
+                    }
+                };
+            }
+        };
+        editColumn.setCellFactory(cellFactory);
+    }
+
+    public void refreshTaskList() {
+        List<Task> tasks = TaskStorage.loadTasks();
+        taskList.setAll(tasks);
+        taskTable.setItems(taskList);
+        taskTable.refresh();
     }
 
     @FXML
-    private void handleDeleteTask() {
-        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
-        if (selectedTask == null) {
-            showAlert("Selection Error", "No task selected.");
-            return;
+    private void openEditTaskWindow(Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/edit_task.fxml"));
+            Parent root = loader.load();
+
+            EditTaskController editTaskController = loader.getController();
+            editTaskController.setTask(task);
+            editTaskController.setMainController(this);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Task");
+            stage.setScene(new Scene(root, 450, 400));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        taskList.remove(selectedTask);
-        TaskStorage.saveTasks(taskList);  // Save after deletion
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+
 }

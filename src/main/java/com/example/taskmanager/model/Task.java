@@ -1,5 +1,7 @@
 package com.example.taskmanager.model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +10,11 @@ public class Task {
     private String description;
     private Category category;
     private Priority priority;
-    private String deadline; // Format: YYYY-MM-DD
+    private String deadline; // Stored as String in format "YYYY-MM-DD"
     private TaskStatus status; // Open, In Progress, Postponed, Completed, Delayed
     private List<Reminder> reminders;
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public Task(String title, String description, Category category, Priority priority, String deadline) {
         this.title = title;
@@ -47,13 +51,19 @@ public class Task {
     public void setDeadline(String deadline) { this.deadline = deadline; }
 
     public TaskStatus getStatus() { return status; }
-    public void setStatus(TaskStatus status) {
-        this.status = status; // Assigning the enum value correctly
-    }
+    public void setStatus(TaskStatus status) { this.status = status; }
 
     public List<Reminder> getReminders() { return reminders; }
     public void addReminder(Reminder reminder) { this.reminders.add(reminder); }
     public void removeReminder(Reminder reminder) { this.reminders.remove(reminder); }
+
+    // Convert deadline to LocalDate
+    public LocalDate getDeadlineAsLocalDate() {
+        return (deadline != null && !deadline.isEmpty()) ? LocalDate.parse(deadline, FORMATTER) : null;
+    }
+
+    // Set deadline from LocalDate
+    public void setDeadlineFromLocalDate(LocalDate date) {
+        this.deadline = (date != null) ? date.format(FORMATTER) : null;
+    }
 }
-
-

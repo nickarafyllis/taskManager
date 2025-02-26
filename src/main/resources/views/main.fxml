@@ -19,6 +19,7 @@
                 <TableColumn fx:id="priorityColumn" text="Priority" prefWidth="100" />
                 <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="120" />
                 <TableColumn fx:id="statusColumn" text="Status" prefWidth="100" />
+                <TableColumn text="Actions" fx:id="editColumn" prefWidth="80" /> <!-- Edit Button Column -->
             </columns>
         </TableView>
     </center>
@@ -27,8 +28,6 @@
         <VBox spacing="10" style="-fx-padding: 10;">
             <HBox spacing="10">
                 <Button fx:id="addButton" text="Add Task" onAction="#openAddTaskWindow" />
-                <Button fx:id="editButton" text="Edit Task" onAction="#handleEditTask" />
-                <Button fx:id="deleteButton" text="Delete Task" onAction="#handleDeleteTask" />
             </HBox>
             <HBox spacing="10">
                 <Button fx:id="manageCategoriesButton" text="Manage Categories" onAction="#openManageCategoriesWindow" />
@@ -38,4 +37,3 @@
         </VBox>
     </bottom>
 </BorderPane>
-

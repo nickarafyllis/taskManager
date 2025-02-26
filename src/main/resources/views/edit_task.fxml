@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.taskmanager.controller.EditTaskController">
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <TextField fx:id="taskTitleInput" promptText="Task Title" prefWidth="400" />
+            <TextArea fx:id="taskDescriptionInput" promptText="Task Description" prefWidth="400" />
+
+            <Label text="Select Category:" />
+            <ComboBox fx:id="categoryComboBox" prefWidth="400" />
+
+            <Label text="Select Priority:" />
+            <ComboBox fx:id="priorityComboBox" prefWidth="400" />
+
+            <Label text="Select Deadline:" />
+            <DatePicker fx:id="taskDeadlinePicker" prefWidth="400" />
+
+            <Button fx:id="saveTaskButton" text="Save Task" onAction="#handleSaveTask" />
+        </VBox>
+    </center>
+</BorderPane>
