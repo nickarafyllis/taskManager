@@ -7,7 +7,15 @@
             fx:controller="com.example.taskmanager.controller.MainController">
 
     <top>
-        <Label text="MediaLab Assistant" style="-fx-font-size: 24px; -fx-padding: 10;" />
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label text="MediaLab Assistant" style="-fx-font-size: 24px; -fx-padding: 10;" />
+            <HBox spacing="20">
+                <Label fx:id="totalTasksLabel" text="Total Tasks: 0" />
+                <Label fx:id="completedTasksLabel" text="Completed: 0" />
+                <Label fx:id="delayedTasksLabel" text="Delayed: 0" />
+                <Label fx:id="upcomingTasksLabel" text="Upcoming (7 days): 0" />
+            </HBox>
+        </VBox>
     </top>
 
     <center>

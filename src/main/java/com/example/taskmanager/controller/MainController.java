@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MainController {
@@ -36,6 +37,15 @@ public class MainController {
     private TableColumn<Task, String> deadlineColumn;
     @FXML
     private TableColumn<Task, Void> editColumn;
+    @FXML
+    private Label totalTasksLabel;
+    @FXML
+    private Label completedTasksLabel;
+    @FXML
+    private Label delayedTasksLabel;
+    @FXML
+    private Label upcomingTasksLabel;
+
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
 
@@ -159,6 +169,26 @@ public class MainController {
         taskList.setAll(tasks);
         taskTable.setItems(taskList);
         taskTable.refresh();
+
+        updateTaskStatistics(tasks);
+    }
+    private void updateTaskStatistics(List<Task> tasks) {
+        int total = tasks.size();
+        int completed = (int) tasks.stream().filter(task -> task.getStatus() == Task.TaskStatus.Completed).count();
+        int delayed = (int) tasks.stream().filter(task -> task.getStatus() == Task.TaskStatus.Delayed).count();
+
+        LocalDate today = LocalDate.now();
+        int upcoming = (int) tasks.stream()
+                .filter(task -> {
+                    LocalDate deadline = LocalDate.parse(task.getDeadline());
+                    return deadline.isAfter(today) && deadline.isBefore(today.plusDays(7));
+                })
+                .count();
+
+        totalTasksLabel.setText("Total Tasks: " + total);
+        completedTasksLabel.setText("Completed: " + completed);
+        delayedTasksLabel.setText("Delayed: " + delayed);
+        upcomingTasksLabel.setText("Upcoming (7 days): " + upcoming);
     }
 
     @FXML
