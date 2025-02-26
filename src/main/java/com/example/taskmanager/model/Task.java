@@ -53,7 +53,13 @@ public class Task {
     public TaskStatus getStatus() { return status; }
     public void setStatus(TaskStatus status) { this.status = status; }
 
-    public List<Reminder> getReminders() { return reminders; }
+    public List<Reminder> getReminders() {
+        if (reminders == null) {
+            reminders = new ArrayList<>();
+        }
+        return reminders;
+    }
+
     public void addReminder(Reminder reminder) { this.reminders.add(reminder); }
     public void removeReminder(Reminder reminder) { this.reminders.remove(reminder); }
 

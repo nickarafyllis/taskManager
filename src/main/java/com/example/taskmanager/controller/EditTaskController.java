@@ -1,13 +1,25 @@
 package com.example.taskmanager.controller;
 
-import com.example.taskmanager.model.Task;
+import com.example.taskmanager.model.*;
 import com.example.taskmanager.storage.TaskStorage;
+import com.google.gson.reflect.TypeToken;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EditTaskController {
+    private static final Logger LOGGER = Logger.getLogger(EditTaskController.class.getName());
+
     @FXML
     private TextField taskTitleInput;
     @FXML
@@ -20,6 +32,10 @@ public class EditTaskController {
     private DatePicker taskDeadlinePicker;
     @FXML
     private Button saveTaskButton;
+    @FXML
+    private Button deleteTaskButton;
+
+    private static final Gson gson = new Gson();
 
     private Task task;
     private MainController mainController;
@@ -27,41 +43,60 @@ public class EditTaskController {
     public void setTask(Task task) {
         this.task = task;
 
-        // Load available categories and priorities
+        // ✅ Load categories & priorities from memory (not a separate storage class)
         loadCategories();
         loadPriorities();
 
-        // Set current values
+        // ✅ Set task details
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
 
-        // Ensure selected category/priority is set after ComboBoxes are populated
-        categoryComboBox.setValue(task.getCategory() != null ? task.getCategory().getName() : "");
-        priorityComboBox.setValue(task.getPriority() != null ? task.getPriority().getName() : "");
+        // ✅ Set selected category & priority
+        if (task.getCategory() != null) {
+            categoryComboBox.getSelectionModel().select(task.getCategory().getName());
+        }
+        if (task.getPriority() != null) {
+            priorityComboBox.getSelectionModel().select(task.getPriority().getName());
+        }
 
-        // Set deadline
+        // ✅ Set deadline
         taskDeadlinePicker.setValue(java.time.LocalDate.parse(task.getDeadline()));
     }
-    private void loadCategories() {
-        List<Task> tasks = TaskStorage.loadTasks();
-        List<String> categories = tasks.stream()
-                .map(task -> task.getCategory() != null ? task.getCategory().getName() : null)
-                .distinct()
-                .filter(name -> name != null && !name.isEmpty())
-                .toList();
 
-        categoryComboBox.getItems().setAll(categories);
+    private void loadCategories() {
+        File file = new File("src/main/resources/medialab/categories.json");
+        if (file.exists()) {
+            try (Reader reader = new FileReader(file)) {
+                Type listType = new TypeToken<List<String>>() {}.getType();
+                List<String> loadedCategories = gson.fromJson(reader, listType);
+                if (loadedCategories == null) {
+                    loadedCategories = List.of();
+                }
+                categoryComboBox.setItems(FXCollections.observableArrayList(loadedCategories));
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error loading categories", e);
+            }
+        } else {
+            categoryComboBox.setItems(FXCollections.observableArrayList());
+        }
     }
 
     private void loadPriorities() {
-        List<Task> tasks = TaskStorage.loadTasks();
-        List<String> priorities = tasks.stream()
-                .map(task -> task.getPriority() != null ? task.getPriority().getName() : null)
-                .distinct()
-                .filter(name -> name != null && !name.isEmpty())
-                .toList();
-
-        priorityComboBox.getItems().setAll(priorities);
+        File file = new File("src/main/resources/medialab/priorities.json");
+        if (file.exists()) {
+            try (Reader reader = new FileReader(file)) {
+                Type listType = new TypeToken<List<String>>() {}.getType();
+                List<String> loadedPriorities = gson.fromJson(reader, listType);
+                if (loadedPriorities == null) {
+                    loadedPriorities = List.of();
+                }
+                priorityComboBox.setItems(FXCollections.observableArrayList(loadedPriorities));
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error loading priorities", e);
+            }
+        } else {
+            priorityComboBox.setItems(FXCollections.observableArrayList());
+        }
     }
 
     public void setMainController(MainController mainController) {
@@ -75,39 +110,56 @@ public class EditTaskController {
             return;
         }
 
-        // Load the existing task list
         List<Task> tasks = TaskStorage.loadTasks();
 
-        // Find the task by its title and deadline
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getTitle().equals(task.getTitle()) && tasks.get(i).getDeadline().equals(task.getDeadline())) {
-                // Update task details
-                tasks.get(i).setTitle(taskTitleInput.getText());
-                tasks.get(i).setDescription(taskDescriptionInput.getText());
-                tasks.get(i).setCategory(new com.example.taskmanager.model.Category(categoryComboBox.getValue()));
-                tasks.get(i).setPriority(new com.example.taskmanager.model.Priority(priorityComboBox.getValue()));
-                tasks.get(i).setDeadline(taskDeadlinePicker.getValue().toString());
+        for (Task t : tasks) {
+            if (t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline())) {
+                t.setTitle(taskTitleInput.getText());
+                t.setDescription(taskDescriptionInput.getText());
+                t.setCategory(new Category(categoryComboBox.getValue()));
+                t.setPriority(new Priority(priorityComboBox.getValue()));
+                t.setDeadline(taskDeadlinePicker.getValue().toString());
 
-                // ✅ Check if the new deadline has passed, update status to "Delayed"
+                // ✅ Update status if the deadline has passed
                 if (taskDeadlinePicker.getValue().isBefore(java.time.LocalDate.now())) {
-                    tasks.get(i).setStatus(Task.TaskStatus.Delayed);
+                    t.setStatus(Task.TaskStatus.Delayed);
                 }
 
-                break; // Stop searching after updating the task
+                break;
             }
         }
 
-        // Save the modified task list
+        // ✅ Save the modified task list
         TaskStorage.saveTasks(tasks);
 
-        // Ensure the UI refreshes with new data
+        // ✅ Refresh UI
         mainController.refreshTaskList();
 
-        // Close the edit task window
+        // ✅ Close the edit task window
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
         stage.close();
     }
 
+    @FXML
+    private void handleDeleteTask() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Deletion");
+        alert.setHeaderText("Are you sure you want to delete this task?");
+        alert.setContentText("This will also delete all associated reminders.");
+
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        List<Task> tasks = TaskStorage.loadTasks();
+        tasks.removeIf(t -> t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline()));
+        TaskStorage.saveTasks(tasks);
+
+        mainController.refreshTaskList();
+
+        Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
+        stage.close();
+    }
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

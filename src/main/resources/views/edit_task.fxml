@@ -21,6 +21,8 @@
             <DatePicker fx:id="taskDeadlinePicker" prefWidth="400" />
 
             <Button fx:id="saveTaskButton" text="Save Task" onAction="#handleSaveTask" />
+            <Button fx:id="deleteTaskButton" text="Delete Task" onAction="#handleDeleteTask" style="-fx-background-color: red; -fx-text-fill: white;" />
+
         </VBox>
     </center>
 </BorderPane>
