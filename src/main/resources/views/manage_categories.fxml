@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.taskmanager.controller.ManageCategoriesController">
+
+    <top>
+        <Label text="Manage Categories" style="-fx-font-size: 20px; -fx-padding: 10;" />
+    </top>
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <ListView fx:id="categoryListView" prefWidth="400" prefHeight="300" />
+            <TextField fx:id="categoryInput" promptText="Enter category name" prefWidth="400" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Button fx:id="addCategoryButton" text="Add" onAction="#handleAddCategory" />
+            <Button fx:id="editCategoryButton" text="Edit" onAction="#handleEditCategory" />
+            <Button fx:id="deleteCategoryButton" text="Delete" onAction="#handleDeleteCategory" />
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.taskmanager.controller.ManagePrioritiesController">
+
+    <top>
+        <Label text="Manage Priorities" style="-fx-font-size: 20px; -fx-padding: 10;" />
+    </top>
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <ListView fx:id="priorityListView" prefWidth="400" prefHeight="300" />
+            <TextField fx:id="priorityInput" promptText="Enter priority" prefWidth="400" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Button fx:id="addPriorityButton" text="Add" onAction="#handleAddPriority" />
+            <Button fx:id="editPriorityButton" text="Edit" onAction="#handleEditPriority" />
+            <Button fx:id="deletePriorityButton" text="Delete" onAction="#handleDeletePriority" />
+        </HBox>
+    </bottom>
+</BorderPane>
+

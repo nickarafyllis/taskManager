@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.taskmanager.controller.MainController">
+
+    <top>
+        <Label text="MediaLab Assistant" style="-fx-font-size: 24px; -fx-padding: 10;" />
+    </top>
+
+    <center>
+        <TableView fx:id="taskTable" prefWidth="800" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="titleColumn" text="Title" prefWidth="150" />
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="200" />
+                <TableColumn fx:id="categoryColumn" text="Category" prefWidth="120" />
+                <TableColumn fx:id="priorityColumn" text="Priority" prefWidth="100" />
+                <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="120" />
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <HBox spacing="10">
+                <Button fx:id="addButton" text="Add Task" onAction="#openAddTaskWindow" />
+                <Button fx:id="editButton" text="Edit Task" onAction="#handleEditTask" />
+                <Button fx:id="deleteButton" text="Delete Task" onAction="#handleDeleteTask" />
+            </HBox>
+            <HBox spacing="10">
+                <Button fx:id="manageCategoriesButton" text="Manage Categories" onAction="#openManageCategoriesWindow" />
+                <Button fx:id="managePrioritiesButton" text="Manage Priorities" onAction="#openManagePrioritiesWindow" />
+                <Button fx:id="manageRemindersButton" text="Manage Reminders" onAction="#openManageRemindersWindow" />
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>
+

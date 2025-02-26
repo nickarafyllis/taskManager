@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.taskmanager.controller.ManageRemindersController">
+
+    <top>
+        <Label text="Manage Reminders" style="-fx-font-size: 20px; -fx-padding: 10;" />
+    </top>
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <TableView fx:id="reminderTable" prefWidth="400" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="messageColumn" text="Message" prefWidth="150" />
+                    <TableColumn fx:id="dateTimeColumn" text="Date &amp; Time" prefWidth="150" />
+                    <TableColumn fx:id="taskIdColumn" text="Task ID" prefWidth="100" />
+                </columns>
+            </TableView>
+
+            <TextField fx:id="reminderMessageInput" promptText="Enter reminder message" prefWidth="400" />
+            <DatePicker fx:id="reminderDatePicker" prefWidth="200" />
+            <TextField fx:id="reminderTimeInput" promptText="Enter time (HH:mm)" prefWidth="200" />
+            <TextField fx:id="taskIdInput" promptText="Task ID" prefWidth="400" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Button fx:id="addReminderButton" text="Add" onAction="#handleAddReminder" />
+            <Button fx:id="editReminderButton" text="Edit" onAction="#handleEditReminder" />
+            <Button fx:id="deleteReminderButton" text="Delete" onAction="#handleDeleteReminder" />
+        </HBox>
+    </bottom>
+</BorderPane>
