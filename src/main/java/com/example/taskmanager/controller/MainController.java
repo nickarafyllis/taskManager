@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainController {
@@ -46,6 +47,15 @@ public class MainController {
     private Label upcomingTasksLabel;
     @FXML
     private TableColumn<Task, String> reminderColumn;
+    @FXML
+    private TextField searchTitleField;
+    @FXML
+    private ComboBox<String> searchCategoryComboBox;
+    @FXML
+    private ComboBox<String> searchPriorityComboBox;
+
+    private List<Task> allTasks = new ArrayList<>(); // Initialize to avoid null pointer
+
 
 
 
@@ -96,7 +106,102 @@ public class MainController {
             }
         });
 
+        reminderColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button reminderButton = new Button("Reminders");
+
+            {
+                reminderButton.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    openManageRemindersWindow(task);
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(reminderButton);
+                }
+            }
+        });
+
+
         refreshTaskList();
+
+        // Populate category and priority filters
+        loadCategoriesAndPriorities();
+    }
+
+    // Load all categories & priorities into ComboBoxes
+    private void loadCategoriesAndPriorities() {
+        List<Task> tasks = TaskStorage.loadTasks();
+        List<String> categories = tasks.stream()
+                .map(task -> task.getCategory() != null ? task.getCategory().getName() : null)
+                .filter(name -> name != null && !name.isEmpty())
+                .distinct()
+                .toList();
+
+        List<String> priorities = tasks.stream()
+                .map(task -> task.getPriority() != null ? task.getPriority().getName() : null)
+                .filter(name -> name != null && !name.isEmpty())
+                .distinct()
+                .toList();
+
+        searchCategoryComboBox.getItems().setAll(categories);
+        searchPriorityComboBox.getItems().setAll(priorities);
+    }
+
+    // Handle search button click
+    @FXML
+    private void handleSearch() {
+        if (allTasks == null) {
+            allTasks = TaskStorage.loadTasks(); // ✅ Ensure allTasks is never null
+        }
+
+        String searchTitle = searchTitleField.getText().trim().toLowerCase();
+        String selectedCategory = searchCategoryComboBox.getValue();
+        String selectedPriority = searchPriorityComboBox.getValue();
+
+        List<Task> filteredTasks = allTasks.stream()
+                .filter(task -> (searchTitle.isEmpty() || task.getTitle().toLowerCase().contains(searchTitle)))
+                .filter(task -> (selectedCategory == null || selectedCategory.isEmpty() ||
+                        (task.getCategory() != null && task.getCategory().getName().equals(selectedCategory))))
+                .filter(task -> (selectedPriority == null || selectedPriority.isEmpty() ||
+                        (task.getPriority() != null && task.getPriority().getName().equals(selectedPriority))))
+                .toList();
+
+        taskList.setAll(filteredTasks);
+    }
+
+
+    // Handle clear button click
+    @FXML
+    private void clearSearch() {
+        searchTitleField.clear();
+        searchCategoryComboBox.getSelectionModel().clearSelection();
+        searchPriorityComboBox.getSelectionModel().clearSelection();
+        taskList.setAll(allTasks);
+    }
+
+    @FXML
+    private void openManageRemindersWindow(Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/task_reminders.fxml"));
+            Parent root = loader.load();
+
+            TaskNotificationController taskNotificationController = loader.getController();
+            taskNotificationController.setTask(task);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Manage Reminders for " + task.getTitle());
+            stage.setScene(new Scene(root, 400, 300));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -179,13 +284,14 @@ public class MainController {
     }
 
     public void refreshTaskList() {
-        List<Task> tasks = TaskStorage.loadTasks();
-        taskList.setAll(tasks);
+        allTasks = TaskStorage.loadTasks(); // ✅ Ensure allTasks is always updated
+        taskList.setAll(allTasks); // ✅ ObservableList is updated with allTasks
         taskTable.setItems(taskList);
         taskTable.refresh();
 
-        updateTaskStatistics(tasks);
+        updateTaskStatistics(allTasks);
     }
+
     private void updateTaskStatistics(List<Task> tasks) {
         int total = tasks.size();
         int completed = (int) tasks.stream().filter(task -> task.getStatus() == Task.TaskStatus.Completed).count();

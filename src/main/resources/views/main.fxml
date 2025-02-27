@@ -15,6 +15,15 @@
                 <Label fx:id="delayedTasksLabel" text="Delayed: 0" />
                 <Label fx:id="upcomingTasksLabel" text="Upcoming (7 days): 0" />
             </HBox>
+
+            <!-- Search Bar -->
+            <HBox spacing="10" style="-fx-padding: 10;">
+                <TextField fx:id="searchTitleField" promptText="Search by Title"/>
+                <ComboBox fx:id="searchCategoryComboBox" promptText="Filter by Category"/>
+                <ComboBox fx:id="searchPriorityComboBox" promptText="Filter by Priority"/>
+                <Button text="Search" onAction="#handleSearch"/>
+                <Button text="Clear" onAction="#clearSearch"/>
+            </HBox>
         </VBox>
     </top>
 

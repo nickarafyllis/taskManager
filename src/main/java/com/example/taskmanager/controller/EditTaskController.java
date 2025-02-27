@@ -118,10 +118,19 @@ public class EditTaskController {
                 t.setDescription(taskDescriptionInput.getText());
                 t.setCategory(new Category(categoryComboBox.getValue()));
                 t.setPriority(new Priority(priorityComboBox.getValue()));
+
+                // Store the previous status before modifying the deadline
+                Task.TaskStatus previousStatus = t.getStatus();
+
+                // Update the deadline
                 t.setDeadline(taskDeadlinePicker.getValue().toString());
 
-                // ✅ Update status if the deadline has passed
-                if (taskDeadlinePicker.getValue().isBefore(java.time.LocalDate.now())) {
+                // If the previous status was "Delayed" and the new deadline is in the future
+                if (previousStatus == Task.TaskStatus.Delayed && taskDeadlinePicker.getValue().isAfter(java.time.LocalDate.now())) {
+                    // Restore to "Open" or another valid state
+                    t.setStatus(Task.TaskStatus.Open);  // Change this if there was another state before "Delayed"
+                } else if (taskDeadlinePicker.getValue().isBefore(java.time.LocalDate.now())) {
+                    // If the new deadline is still in the past, keep it as "Delayed"
                     t.setStatus(Task.TaskStatus.Delayed);
                 }
 
@@ -139,6 +148,8 @@ public class EditTaskController {
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
         stage.close();
     }
+
+
 
     @FXML
     private void handleDeleteTask() {
