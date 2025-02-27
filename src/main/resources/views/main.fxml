@@ -19,15 +19,16 @@
     </top>
 
     <center>
-        <TableView fx:id="taskTable" prefWidth="800" prefHeight="400">
+        <TableView fx:id="taskTable" minWidth="800" minHeight="150" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="titleColumn" text="Title" prefWidth="150" />
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="200" />
-                <TableColumn fx:id="categoryColumn" text="Category" prefWidth="120" />
-                <TableColumn fx:id="priorityColumn" text="Priority" prefWidth="100" />
-                <TableColumn fx:id="deadlineColumn" text="Deadline" prefWidth="120" />
-                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100" />
-                <TableColumn text="Actions" fx:id="editColumn" prefWidth="80" /> <!-- Edit Button Column -->
+                <TableColumn fx:id="titleColumn" text="Title" minWidth="80" />
+                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="150" />
+                <TableColumn fx:id="categoryColumn" text="Category" minWidth="60" />
+                <TableColumn fx:id="priorityColumn" text="Priority" minWidth="50" />
+                <TableColumn fx:id="deadlineColumn" text="Deadline" minWidth="60" />
+                <TableColumn fx:id="statusColumn" text="Status" minWidth="60" />
+                <TableColumn text="Actions" fx:id="editColumn" minWidth="50" />
+                <TableColumn text="Reminders" fx:id="reminderColumn" minWidth="60" />
             </columns>
         </TableView>
     </center>
