@@ -44,12 +44,27 @@ public class MainController {
     private Label delayedTasksLabel;
     @FXML
     private Label upcomingTasksLabel;
+    @FXML
+    private TableColumn<Task, String> reminderColumn;
+
 
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
+
+        taskTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        titleColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.15));
+        descriptionColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.25));
+        categoryColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.15));
+        priorityColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.10));
+        deadlineColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.15));
+        statusColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.10));
+        editColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.10));
+        reminderColumn.prefWidthProperty().bind(taskTable.widthProperty().multiply(0.10));
+
         titleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
         descriptionColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDescription()));
         categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(
