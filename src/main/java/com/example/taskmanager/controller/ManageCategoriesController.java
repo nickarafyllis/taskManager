@@ -108,15 +108,6 @@ public class ManageCategoriesController {
         showAlert("Success", "Category and all related tasks and reminders deleted.");
     }
 
-
-
-
-    @FXML
-    private void handleClose() {
-        Stage stage = (Stage) categoryListView.getScene().getWindow();
-        stage.close();
-    }
-
     private void loadCategories() {
         File file = new File(FILE_PATH);
         if (file.exists()) {

@@ -261,10 +261,6 @@ public class MainController {
         }
     }
 
-    public TableView<Task> getTaskTable() {
-        return taskTable;
-    }
-
 
     @FXML
     private void openManageCategoriesWindow() {

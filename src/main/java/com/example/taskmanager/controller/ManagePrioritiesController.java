@@ -1,7 +1,5 @@
 package com.example.taskmanager.controller;
 
-import com.example.taskmanager.storage.*;
-import com.example.taskmanager.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
@@ -62,12 +60,6 @@ public class ManagePrioritiesController {
             refreshTaskCreationOptions();
             loadPriorities();
         }
-    }
-
-    @FXML
-    private void handleClose() {
-        Stage stage = (Stage) priorityListView.getScene().getWindow();
-        stage.close();
     }
 
     private void loadPriorities() {
