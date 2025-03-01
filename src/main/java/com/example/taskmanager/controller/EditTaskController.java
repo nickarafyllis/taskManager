@@ -1,7 +1,6 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.*;
-import com.example.taskmanager.storage.ReminderStorage;
 import com.example.taskmanager.storage.TaskStorage;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
@@ -147,35 +146,6 @@ public class EditTaskController {
 
         // ✅ Close the edit task window
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
-        stage.close();
-    }
-
-    private void handleDeleteTask() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirm Deletion");
-        alert.setHeaderText("Are you sure you want to delete this task?");
-        alert.setContentText("This will also delete all associated reminders.");
-
-        if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
-            return;
-        }
-
-        List<Task> tasks = TaskStorage.loadTasks();
-        tasks.removeIf(t -> t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline()));
-
-        // ✅ Delete associated reminders before saving
-        ReminderStorage.deleteRemindersForTask(task.getTitle());
-
-        // ✅ Save updated tasks list
-        TaskStorage.saveTasks(tasks);
-
-        // ✅ Refresh UI
-        if (mainController != null) {
-            mainController.refreshTaskList();
-        }
-
-        // ✅ Close the edit task window
-        Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
         stage.close();
     }
 

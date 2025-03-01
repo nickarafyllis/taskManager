@@ -453,6 +453,21 @@ public class MainController {
         }
     }
 
+    @FXML
+    private void openViewAllRemindersWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/view_all_reminders.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("All Active Reminders");
+            stage.setScene(new Scene(loader.load(), 650, 400));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

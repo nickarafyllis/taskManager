@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.taskmanager.controller.ViewAllRemindersController"
+      spacing="10" style="-fx-padding: 10;">
+
+    <Label text="All Active Reminders" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TableView fx:id="reminderTable" minWidth="600">
+        <columns>
+            <TableColumn fx:id="taskColumn" text="Task" minWidth="200" />
+            <TableColumn fx:id="typeColumn" text="Type" minWidth="150" />
+            <TableColumn fx:id="dateColumn" text="Reminder Date" minWidth="200" />
+        </columns>
+    </TableView>
+
+    <Button fx:id="closeButton" text="Close" onAction="#handleClose" />
+
+</VBox>

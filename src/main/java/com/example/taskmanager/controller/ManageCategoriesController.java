@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -89,22 +90,19 @@ public class ManageCategoriesController {
 
         TaskStorage.saveTasks(remainingTasks);
 
-        // ✅ Remove related reminders
-        List<Reminder> reminders = ReminderStorage.loadReminders();
-        if (reminders == null) {
-            reminders = new ArrayList<>();
-        }
-        List<Reminder> updatedReminders = reminders.stream()
-                .filter(reminder -> remainingTasks.stream()
-                        .anyMatch(task -> task.getTitle().equals(reminder.getTaskId())))
-                .toList();
-
-        ReminderStorage.saveReminders(updatedReminders);
-
         // ✅ Refresh UI
         loadCategories();
 
         showAlert("Success", "Category and all related tasks and reminders deleted.");
+    }
+
+
+
+
+    @FXML
+    private void handleClose() {
+        Stage stage = (Stage) categoryListView.getScene().getWindow();
+        stage.close();
     }
 
     private void loadCategories() {

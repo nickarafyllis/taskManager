@@ -77,14 +77,4 @@ public class TaskStorage {
         return tasks;
     }
 
-
-    public static void deleteTask(String taskTitle) {
-        List<Task> tasks = loadTasks();
-        tasks.removeIf(task -> task.getTitle().equals(taskTitle));
-
-        // ✅ Also delete associated reminders
-        ReminderStorage.deleteRemindersForTask(taskTitle);
-
-        saveTasks(tasks);
-    }
 }

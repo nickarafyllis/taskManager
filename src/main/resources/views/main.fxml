@@ -50,7 +50,7 @@
             <HBox spacing="10">
                 <Button fx:id="manageCategoriesButton" text="Manage Categories" onAction="#openManageCategoriesWindow" />
                 <Button fx:id="managePrioritiesButton" text="Manage Priorities" onAction="#openManagePrioritiesWindow" />
-                <Button fx:id="manageRemindersButton" text="Manage Reminders" onAction="#openManageRemindersWindow" />
+                <Button fx:id="viewAllRemindersButton" text="View All Reminders" onAction="#openViewAllRemindersWindow" />
             </HBox>
         </VBox>
     </bottom>
