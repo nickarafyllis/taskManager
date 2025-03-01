@@ -1,6 +1,7 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.*;
+import com.example.taskmanager.storage.ReminderStorage;
 import com.example.taskmanager.storage.TaskStorage;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
@@ -149,9 +150,6 @@ public class EditTaskController {
         stage.close();
     }
 
-
-
-    @FXML
     private void handleDeleteTask() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Deletion");
@@ -164,19 +162,30 @@ public class EditTaskController {
 
         List<Task> tasks = TaskStorage.loadTasks();
         tasks.removeIf(t -> t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline()));
+
+        // ✅ Delete associated reminders before saving
+        ReminderStorage.deleteRemindersForTask(task.getTitle());
+
+        // ✅ Save updated tasks list
         TaskStorage.saveTasks(tasks);
 
-        mainController.refreshTaskList();
+        // ✅ Refresh UI
+        if (mainController != null) {
+            mainController.refreshTaskList();
+        }
 
+        // ✅ Close the edit task window
         Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
         stage.close();
     }
 
-    private void showAlert(String title, String content) {
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setContentText(message);
         alert.showAndWait();
     }
+
+
 }

@@ -1,63 +1,76 @@
 package com.example.taskmanager.storage;
 
 import com.example.taskmanager.model.Reminder;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.*;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ReminderStorage {
+
     private static final String FILE_PATH = "src/main/resources/medialab/reminders.json";
-    private static final Logger LOGGER = Logger.getLogger(ReminderStorage.class.getName());
-
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>)
-                    (src, typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
-            .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>)
-                    (json, type, context) -> LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-            .setPrettyPrinting()
-            .create();
-
-    public static void saveReminders(List<Reminder> reminders) {
-        try {
-            File file = new File(FILE_PATH);
-            Files.createDirectories(Paths.get(file.getParent()));
-            if (!file.exists()) file.createNewFile();
-
-            try (FileWriter writer = new FileWriter(file)) {
-                gson.toJson(reminders, writer);
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error saving reminders", e);
-        }
-    }
+    private static final Gson gson = new Gson();
 
     public static List<Reminder> loadReminders() {
-        List<Reminder> reminders = new ArrayList<>();
-        try {
-            File file = new File(FILE_PATH);
-            if (!file.exists()) {
-                LOGGER.log(Level.WARNING, "No reminders file found. Creating a new one.");
-                saveReminders(reminders);
-                return reminders;
-            }
+        File file = new File(FILE_PATH);
+        if (!file.exists()) return new ArrayList<>();
 
-            try (FileReader reader = new FileReader(file)) {
-                Type reminderListType = new TypeToken<List<Reminder>>() {}.getType();
-                reminders = gson.fromJson(reader, reminderListType);
-            }
+        try (Reader reader = new FileReader(file)) {
+            Type listType = new TypeToken<List<Reminder>>() {}.getType();
+            List<Reminder> reminders = gson.fromJson(reader, listType);
+            return (reminders != null) ? reminders : new ArrayList<>();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading reminders", e);
+            e.printStackTrace();
+            return new ArrayList<>();
         }
-        return reminders;
     }
+
+    public static List<Reminder> loadRemindersForTask(String taskTitle) {
+        return loadReminders().stream()
+                .filter(reminder -> reminder.getTaskId().equals(taskTitle))
+                .collect(Collectors.toList());
+    }
+
+    public static void updateReminder(Reminder updatedReminder) {
+        List<Reminder> reminders = loadReminders().stream()
+                .map(reminder -> reminder.getTaskId().equals(updatedReminder.getTaskId()) &&
+                        reminder.getType().equals(updatedReminder.getType()) ?
+                        updatedReminder : reminder)
+                .collect(Collectors.toList());
+        saveReminders(reminders);
+    }
+
+    public static void deleteReminder(String taskTitle, String reminderType) {
+        List<Reminder> reminders = loadReminders().stream()
+                .filter(reminder -> !(reminder.getTaskId().equals(taskTitle) && reminder.getType().equals(reminderType)))
+                .collect(Collectors.toList());
+
+        saveReminders(reminders);
+    }
+
+    public static void deleteRemindersForTask(String taskTitle) {
+        List<Reminder> remainingReminders = loadReminders().stream()
+                .filter(reminder -> !reminder.getTaskId().equals(taskTitle))
+                .collect(Collectors.toList());
+
+        saveReminders(remainingReminders);
+    }
+
+    public static void saveReminder(Reminder newReminder) {
+        List<Reminder> reminders = loadReminders();
+        reminders.add(newReminder);
+        saveReminders(reminders);
+    }
+
+    public static void saveReminders(List<Reminder> reminders) {
+        try (Writer writer = new FileWriter(FILE_PATH)) {
+            gson.toJson(reminders, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

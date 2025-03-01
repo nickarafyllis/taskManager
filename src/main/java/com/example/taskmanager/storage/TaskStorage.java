@@ -37,10 +37,18 @@ public class TaskStorage {
             try (FileWriter writer = new FileWriter(file)) {
                 gson.toJson(tasks, writer);
             }
+
+            // ✅ Debug - Check if reminders are being saved
+//            System.out.println("Tasks saved! Total tasks: " + tasks.size());
+//            for (Task task : tasks) {
+//                System.out.println("Task: " + task.getTitle() + ", Reminders: " + task.getReminders().size());
+//            }
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error saving tasks", e);
         }
     }
+
 
     public static List<Task> loadTasks() {
         List<Task> tasks = new ArrayList<>();
@@ -56,9 +64,27 @@ public class TaskStorage {
                 Type taskListType = new TypeToken<List<Task>>() {}.getType();
                 tasks = gson.fromJson(reader, taskListType);
             }
+
+//            // ✅ Debug - Check if reminders are being loaded
+//            System.out.println("Tasks loaded! Total tasks: " + tasks.size());
+//            for (Task task : tasks) {
+//                System.out.println("Task: " + task.getTitle() + ", Reminders: " + task.getReminders().size());
+//            }
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error loading tasks", e);
         }
         return tasks;
+    }
+
+
+    public static void deleteTask(String taskTitle) {
+        List<Task> tasks = loadTasks();
+        tasks.removeIf(task -> task.getTitle().equals(taskTitle));
+
+        // ✅ Also delete associated reminders
+        ReminderStorage.deleteRemindersForTask(taskTitle);
+
+        saveTasks(tasks);
     }
 }

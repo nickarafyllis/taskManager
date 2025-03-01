@@ -114,16 +114,39 @@ public class MainController {
                 saveButton.setOnAction(event -> {
                     Task task = getTableView().getItems().get(getIndex());
                     if (task != null) {
-                        task.setStatus(Task.TaskStatus.valueOf(statusComboBox.getValue().replace(" ", "")));
+                        String newStatus = statusComboBox.getValue().replace(" ", "");
+                        Task.TaskStatus updatedStatus = Task.TaskStatus.valueOf(newStatus);
+
+                        // ✅ If task is set to "Completed", remove all reminders
+                        if (updatedStatus == Task.TaskStatus.Completed) {
+                            task.getReminders().clear();
+
+                            // ✅ Save updated task list
+                            List<Task> tasks = TaskStorage.loadTasks();
+                            for (Task t : tasks) {
+                                if (t.getTitle().equals(task.getTitle())) {
+                                    t.setReminders(new ArrayList<>()); // Clear reminders
+                                    break;
+                                }
+                            }
+                            TaskStorage.saveTasks(tasks);
+
+                            showAlert("Info", "All reminders for this task have been removed because it is now completed.");
+                        }
+
+                        // ✅ Set the updated status
+                        task.setStatus(updatedStatus);
                         TaskStorage.saveTasks(getTableView().getItems()); // Save updated tasks
 
-                        getTableView().refresh(); // Refresh UI
+                        // ✅ Refresh UI
+                        getTableView().refresh();
                         saveButton.setVisible(false); // Hide button after saving
 
                         // ✅ Ensure statistics update
                         updateTaskStatistics(getTableView().getItems());
                     }
                 });
+
             }
 
             @Override
@@ -166,7 +189,7 @@ public class MainController {
         });
 
         reminderColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button reminderButton = new Button("Add Reminders");
+            private final Button reminderButton = new Button("Reminders");
 
             {
                 reminderButton.setOnAction(event -> {
@@ -271,21 +294,25 @@ public class MainController {
     @FXML
     private void openManageRemindersWindow(Task task) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/task_reminders.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/manage_reminders.fxml"));
             Parent root = loader.load();
 
-            TaskNotificationController taskNotificationController = loader.getController();
-            taskNotificationController.setTask(task);
+            ManageRemindersController controller = loader.getController();
+            controller.setTask(task);
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Manage Reminders for " + task.getTitle());
-            stage.setScene(new Scene(root, 400, 300));
+            stage.setTitle("Manage Reminders");
+            stage.setScene(new Scene(root, 500, 400));
             stage.showAndWait();
+
+            refreshTaskList();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
 
     @FXML
@@ -424,6 +451,14 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 

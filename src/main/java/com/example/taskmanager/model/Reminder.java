@@ -3,22 +3,14 @@ package com.example.taskmanager.model;
 import java.time.LocalDateTime;
 
 public class Reminder {
-    private String message;
     private LocalDateTime dateTime;
-    private String taskId; // To associate with a task
+    private String taskId;
+    private String type;  // Stores "One day before", "One week before", etc.
 
-    public Reminder(String message, LocalDateTime dateTime, String taskId) {
-        this.message = message;
+    public Reminder(LocalDateTime dateTime, String taskId, String type) {
         this.dateTime = dateTime;
         this.taskId = taskId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+        this.type = type;
     }
 
     public LocalDateTime getDateTime() {
@@ -35,5 +27,13 @@ public class Reminder {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getType() {  // ✅ Getter for reminder type
+        return type;
+    }
+
+    public void setType(String type) {  // ✅ Setter for reminder type
+        this.type = type;
     }
 }

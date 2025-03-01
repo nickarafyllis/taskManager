@@ -1,5 +1,7 @@
 package com.example.taskmanager.model;
 
+import com.example.taskmanager.storage.TaskStorage;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,7 +62,15 @@ public class Task {
         return reminders;
     }
 
-    public void addReminder(Reminder reminder) { this.reminders.add(reminder); }
+    public void addReminder(Reminder reminder) {
+        if (reminders == null) {
+            reminders = new ArrayList<>();
+        }
+        reminders.add(reminder);
+        TaskStorage.saveTasks(TaskStorage.loadTasks()); // ✅ Save tasks after updating reminders
+    }
+
+
     public void removeReminder(Reminder reminder) { this.reminders.remove(reminder); }
 
     // Convert deadline to LocalDate
@@ -72,4 +82,9 @@ public class Task {
     public void setDeadlineFromLocalDate(LocalDate date) {
         this.deadline = (date != null) ? date.format(FORMATTER) : null;
     }
+
+    public void setReminders(List<Reminder> reminders) {
+        this.reminders = reminders;
+    }
+
 }

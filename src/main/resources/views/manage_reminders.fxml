@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.taskmanager.controller.ManageRemindersController">
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.taskmanager.controller.ManageRemindersController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 10;">
 
-    <top>
-        <Label text="Manage Reminders" style="-fx-font-size: 20px; -fx-padding: 10;" />
-    </top>
+    <Label fx:id="taskTitleLabel" text="Task Reminders" style="-fx-font-size: 18px;" />
 
-    <center>
-        <VBox spacing="10" style="-fx-padding: 10;">
-            <TableView fx:id="reminderTable" prefWidth="400" prefHeight="300">
-                <columns>
-                    <TableColumn fx:id="messageColumn" text="Message" prefWidth="150" />
-                    <TableColumn fx:id="dateTimeColumn" text="Date &amp; Time" prefWidth="150" />
-                    <TableColumn fx:id="taskIdColumn" text="Task ID" prefWidth="100" />
-                </columns>
-            </TableView>
+    <TableView fx:id="reminderTable">
+        <columns>
+            <TableColumn text="Reminder Type" fx:id="reminderTypeColumn" minWidth="150"/>
+            <TableColumn text="Date" fx:id="reminderDateColumn" minWidth="150"/>
+            <TableColumn text="Actions" fx:id="reminderActionsColumn" minWidth="100"/>
+        </columns>
+    </TableView>
 
-            <TextField fx:id="reminderMessageInput" promptText="Enter reminder message" prefWidth="400" />
-            <DatePicker fx:id="reminderDatePicker" prefWidth="200" />
-            <TextField fx:id="reminderTimeInput" promptText="Enter time (HH:mm)" prefWidth="200" />
-            <TextField fx:id="taskIdInput" promptText="Task ID" prefWidth="400" />
-        </VBox>
-    </center>
+    <HBox spacing="10">
+        <ComboBox fx:id="reminderTypeComboBox" promptText="Select Reminder">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="One day before"/>
+                    <String fx:value="One week before"/>
+                    <String fx:value="One month before"/>
+                    <String fx:value="Choose date"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <DatePicker fx:id="specificDatePicker" visible="false" promptText="Select Date"/>
+        <Button fx:id="addReminderButton" text="Add Reminder" onAction="#handleAddReminder"/>
+    </HBox>
 
-    <bottom>
-        <HBox spacing="10" style="-fx-padding: 10;">
-            <Button fx:id="addReminderButton" text="Add" onAction="#handleAddReminder" />
-            <Button fx:id="editReminderButton" text="Edit" onAction="#handleEditReminder" />
-            <Button fx:id="deleteReminderButton" text="Delete" onAction="#handleDeleteReminder" />
-        </HBox>
-    </bottom>
-</BorderPane>
+    <Button fx:id="closeButton" text="Close" onAction="#handleClose" />
+
+</VBox>
