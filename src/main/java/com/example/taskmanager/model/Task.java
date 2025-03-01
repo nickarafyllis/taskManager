@@ -28,7 +28,7 @@ public class Task {
 
     public enum TaskStatus {
         Open,
-        In_progress,
+        In_Progress,
         Postponed,
         Completed,
         Delayed

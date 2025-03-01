@@ -31,13 +31,13 @@
         <TableView fx:id="taskTable" minWidth="800" minHeight="150" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="titleColumn" text="Title" minWidth="80" />
-                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="150" />
+                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="200" />
                 <TableColumn fx:id="categoryColumn" text="Category" minWidth="60" />
                 <TableColumn fx:id="priorityColumn" text="Priority" minWidth="50" />
                 <TableColumn fx:id="deadlineColumn" text="Deadline" minWidth="60" />
-                <TableColumn fx:id="statusColumn" text="Status" minWidth="60" />
-                <TableColumn text="Actions" fx:id="editColumn" minWidth="50" />
-                <TableColumn text="Reminders" fx:id="reminderColumn" minWidth="60" />
+                <TableColumn fx:id="statusColumn" text="Status" minWidth="140" />
+                <TableColumn text="Actions" fx:id="editColumn" minWidth="20" />
+                <TableColumn text="Reminders" fx:id="reminderColumn" minWidth="70" />
             </columns>
         </TableView>
     </center>

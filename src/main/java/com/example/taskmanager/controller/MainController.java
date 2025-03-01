@@ -93,7 +93,51 @@ public class MainController {
         priorityColumn.setCellValueFactory(data -> new SimpleStringProperty(
                 data.getValue().getPriority() != null ? data.getValue().getPriority().getName() : "Default"));
         deadlineColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDeadline()));
-        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus().toString()));
+        statusColumn.setCellFactory(param -> new TableCell<>() {
+            private final ComboBox<String> statusComboBox = new ComboBox<>();
+            private final Button saveButton = new Button("Save");
+            private String currentStatus; // Store current status
+
+            {
+                statusComboBox.getItems().addAll("Open", "In_Progress", "Completed", "Delayed");
+                saveButton.setVisible(false); // Initially hidden
+
+                statusComboBox.setOnAction(event -> {
+                    String selectedStatus = statusComboBox.getValue();
+                    if (!selectedStatus.equals(currentStatus)) {
+                        saveButton.setVisible(true); // Show save button only when changed
+                    } else {
+                        saveButton.setVisible(false);
+                    }
+                });
+
+                saveButton.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    if (task != null) {
+                        task.setStatus(Task.TaskStatus.valueOf(statusComboBox.getValue().replace(" ", "")));
+                        TaskStorage.saveTasks(getTableView().getItems()); // Save changes
+                        getTableView().refresh(); // Refresh UI
+                        saveButton.setVisible(false); // Hide button after saving
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Task task = getTableView().getItems().get(getIndex());
+                    currentStatus = task.getStatus().toString(); // Set current status
+                    statusComboBox.setValue(currentStatus);
+                    saveButton.setVisible(false); // Reset save button visibility
+                    HBox container = new HBox(5, statusComboBox, saveButton);
+                    setGraphic(container);
+                }
+            }
+        });
+
 
         // Add Edit button inside the table
         editColumn.setCellFactory(param -> new TableCell<>() {
@@ -118,7 +162,7 @@ public class MainController {
         });
 
         reminderColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button reminderButton = new Button("Reminders");
+            private final Button reminderButton = new Button("Add Reminders");
 
             {
                 reminderButton.setOnAction(event -> {

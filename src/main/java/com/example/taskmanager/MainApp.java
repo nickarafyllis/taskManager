@@ -24,7 +24,7 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader(fxmlLocation);
             BorderPane root = loader.load();
 
-            Scene scene = new Scene(root, 900, 400);
+            Scene scene = new Scene(root, 1100, 550);
             primaryStage.setTitle("MediaLab Assistant");
             primaryStage.setScene(scene);
             primaryStage.show();
