@@ -1,85 +1,46 @@
 [
   {
-    "title": "Complete JavaFX Project",
-    "description": "Finalize the task manager project and test all features.",
-    "category": {
-      "name": "Work"
-    },
-    "priority": {
-      "name": "High"
-    },
-    "deadline": "2024-03-10",
-    "status": "Open",
-    "reminders": [
-      {
-        "dateTime": "2024-03-09T08:00:00",
-        "taskId": "Complete JavaFX Project",
-        "type": "One day before"
-      }
-    ]
-  },
-  {
-    "title": "Grocery Shopping",
-    "description": "Buy vegetables, fruits, and other essentials.",
-    "category": {
-      "name": "Shopping"
-    },
-    "priority": {
-      "name": "Low"
-    },
-    "deadline": "2024-03-12",
-    "status": "Open",
-    "reminders": []
-  },
-  {
-    "title": "Gym Workout",
-    "description": "Upper body strength training and cardio.",
-    "category": {
-      "name": "Fitness"
-    },
-    "priority": {
-      "name": "Medium"
-    },
-    "deadline": "2024-03-11",
+    "title": "Project Report",
+    "description": "Complete the final report for the project.",
+    "category": {"name": "Work"},
+    "priority": {"name": "High"},
+    "deadline": "2025-04-10",
     "status": "In_Progress",
     "reminders": [
-      {
-        "dateTime": "2024-03-10T10:00:00",
-        "taskId": "Gym Workout",
-        "type": "One day before"
-      }
+      {"dateTime": "2025-04-09T09:00:00", "taskId": "Project Report", "type": "One day before"}
     ]
   },
   {
-    "title": "Read JavaFX Documentation",
-    "description": "Go through the official JavaFX documentation.",
-    "category": {
-      "name": "Study"
-    },
-    "priority": {
-      "name": "Medium"
-    },
-    "deadline": "2024-03-15",
+    "title": "Doctor Appointment",
+    "description": "Annual health check-up.",
+    "category": {"name": "Personal"},
+    "priority": {"name": "Medium"},
+    "deadline": "2025-05-15",
     "status": "Open",
     "reminders": [
-      {
-        "dateTime": "2024-03-08T09:00:00",
-        "taskId": "Read JavaFX Documentation",
-        "type": "One week before"
-      }
+      {"dateTime": "2025-05-14T08:00:00", "taskId": "Doctor Appointment", "type": "One day before"}
     ]
   },
   {
-    "title": "Client Meeting",
-    "description": "Discuss project updates with the client.",
-    "category": {
-      "name": "Work"
-    },
-    "priority": {
-      "name": "Urgent"
-    },
-    "deadline": "2024-03-07",
-    "status": "Completed",
-    "reminders": []
+    "title": "Book Flight Tickets",
+    "description": "Book tickets for summer vacation.",
+    "category": {"name": "Travel"},
+    "priority": {"name": "High"},
+    "deadline": "2025-06-01",
+    "status": "Open",
+    "reminders": [
+      {"dateTime": "2025-05-01T12:00:00", "taskId": "Book Flight Tickets", "type": "One month before"}
+    ]
+  },
+  {
+    "title": "Submit Tax Forms",
+    "description": "Submit annual tax declaration.",
+    "category": {"name": "Finance"},
+    "priority": {"name": "Critical"},
+    "deadline": "2025-07-10",
+    "status": "Open",
+    "reminders": [
+      {"dateTime": "2025-06-10T10:00:00", "taskId": "Submit Tax Forms", "type": "One month before"}
+    ]
   }
 ]
