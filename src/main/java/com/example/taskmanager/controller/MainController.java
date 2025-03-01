@@ -115,9 +115,13 @@ public class MainController {
                     Task task = getTableView().getItems().get(getIndex());
                     if (task != null) {
                         task.setStatus(Task.TaskStatus.valueOf(statusComboBox.getValue().replace(" ", "")));
-                        TaskStorage.saveTasks(getTableView().getItems()); // Save changes
+                        TaskStorage.saveTasks(getTableView().getItems()); // Save updated tasks
+
                         getTableView().refresh(); // Refresh UI
                         saveButton.setVisible(false); // Hide button after saving
+
+                        // ✅ Ensure statistics update
+                        updateTaskStatistics(getTableView().getItems());
                     }
                 });
             }
