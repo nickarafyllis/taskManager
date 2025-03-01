@@ -1,0 +1,48 @@
+/* styles.css */
+.root {
+    -fx-font-family: "Arial";
+    -fx-background-color: #f4f4f4;
+}
+
+/* Title Label */
+.label-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* TableView Styling */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+}
+
+.table-column {
+    -fx-alignment: CENTER;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 15px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Dropdowns */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #3498db;
+}
+
+/* Search Fields */
+.text-field {
+    -fx-border-color: #3498db;
+    -fx-border-radius: 5px;
+}

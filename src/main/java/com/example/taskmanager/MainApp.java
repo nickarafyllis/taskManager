@@ -24,7 +24,17 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader(fxmlLocation);
             BorderPane root = loader.load();
 
-            Scene scene = new Scene(root, 1100, 550);
+            // ✅ Create scene
+            Scene scene = new Scene(root, 1300, 600);
+
+            // ✅ Load CSS file
+            URL cssLocation = getClass().getResource("/styles/styles.css");
+            if (cssLocation == null) {
+                throw new IOException("CSS file not found! Check path: /styles/styles.css");
+            }
+            scene.getStylesheets().add(cssLocation.toExternalForm()); // Apply CSS
+
+            // ✅ Set stage properties
             primaryStage.setTitle("MediaLab Assistant");
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -32,6 +42,7 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+
 
     public static void main(String[] args) {
         launch(args);

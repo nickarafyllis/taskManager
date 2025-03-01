@@ -4,34 +4,35 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.taskmanager.controller.MainController">
+            fx:controller="com.example.taskmanager.controller.MainController"
+            styleClass="root">
 
     <top>
         <VBox spacing="10" style="-fx-padding: 10;">
-            <Label text="MediaLab Assistant" style="-fx-font-size: 24px; -fx-padding: 10;" />
-            <HBox spacing="20">
-                <Label fx:id="totalTasksLabel" text="Total Tasks: 0" />
-                <Label fx:id="completedTasksLabel" text="Completed: 0" />
-                <Label fx:id="delayedTasksLabel" text="Delayed: 0" />
-                <Label fx:id="upcomingTasksLabel" text="Upcoming (7 days): 0" />
+            <Label text="MediaLab Assistant" styleClass="title-label" />
+            <HBox spacing="20" styleClass="stats-container">
+                <Label fx:id="totalTasksLabel" text="Total Tasks: 0" styleClass="stat-label" />
+                <Label fx:id="completedTasksLabel" text="Completed: 0" styleClass="stat-label" />
+                <Label fx:id="delayedTasksLabel" text="Delayed: 0" styleClass="stat-label" />
+                <Label fx:id="upcomingTasksLabel" text="Upcoming (7 days): 0" styleClass="stat-label" />
             </HBox>
 
             <!-- Search Bar -->
-            <HBox spacing="10" style="-fx-padding: 10;">
-                <TextField fx:id="searchTitleField" promptText="Search by Title"/>
-                <ComboBox fx:id="searchCategoryComboBox" promptText="Filter by Category"/>
-                <ComboBox fx:id="searchPriorityComboBox" promptText="Filter by Priority"/>
-                <Button text="Search" onAction="#handleSearch"/>
-                <Button text="Clear" onAction="#clearSearch"/>
+            <HBox spacing="10" style="-fx-padding: 10;" styleClass="search-container">
+                <TextField fx:id="searchTitleField" promptText="Search by Title" styleClass="search-field"/>
+                <ComboBox fx:id="searchCategoryComboBox" promptText="Filter by Category" styleClass="dropdown"/>
+                <ComboBox fx:id="searchPriorityComboBox" promptText="Filter by Priority" styleClass="dropdown"/>
+                <Button text="Search" onAction="#handleSearch" styleClass="primary-button"/>
+                <Button text="Clear" onAction="#clearSearch" styleClass="secondary-button"/>
             </HBox>
         </VBox>
     </top>
 
     <center>
-        <TableView fx:id="taskTable" minWidth="800" minHeight="150" VBox.vgrow="ALWAYS">
+        <TableView fx:id="taskTable" minWidth="800" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
             <columns>
-                <TableColumn fx:id="titleColumn" text="Title" minWidth="80" />
-                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="200" />
+                <TableColumn fx:id="titleColumn" text="Title" minWidth="130" />
+                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="320" />
                 <TableColumn fx:id="categoryColumn" text="Category" minWidth="60" />
                 <TableColumn fx:id="priorityColumn" text="Priority" minWidth="50" />
                 <TableColumn fx:id="deadlineColumn" text="Deadline" minWidth="60" />
@@ -44,13 +45,13 @@
 
     <bottom>
         <VBox spacing="10" style="-fx-padding: 10;">
-            <HBox spacing="10">
-                <Button fx:id="addButton" text="Add Task" onAction="#openAddTaskWindow" />
+            <HBox spacing="10" styleClass="button-container">
+                <Button fx:id="addButton" text="Add Task" onAction="#openAddTaskWindow" styleClass="primary-button"/>
             </HBox>
-            <HBox spacing="10">
-                <Button fx:id="manageCategoriesButton" text="Manage Categories" onAction="#openManageCategoriesWindow" />
-                <Button fx:id="managePrioritiesButton" text="Manage Priorities" onAction="#openManagePrioritiesWindow" />
-                <Button fx:id="viewAllRemindersButton" text="View All Reminders" onAction="#openViewAllRemindersWindow" />
+            <HBox spacing="10" styleClass="button-container">
+                <Button fx:id="manageCategoriesButton" text="Manage Categories" onAction="#openManageCategoriesWindow" styleClass="secondary-button"/>
+                <Button fx:id="managePrioritiesButton" text="Manage Priorities" onAction="#openManagePrioritiesWindow" styleClass="secondary-button"/>
+                <Button fx:id="viewAllRemindersButton" text="View All Reminders" onAction="#openViewAllRemindersWindow" styleClass="primary-button"/>
             </HBox>
         </VBox>
     </bottom>
