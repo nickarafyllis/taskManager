@@ -149,6 +149,31 @@ public class EditTaskController {
         stage.close();
     }
 
+    @FXML
+    private void handleDeleteTask() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Deletion");
+        alert.setHeaderText("Are you sure you want to delete this task?");
+        alert.setContentText("This will also delete all associated reminders.");
+
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        List<Task> tasks = TaskStorage.loadTasks();
+        tasks.removeIf(t -> t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline()));
+        TaskStorage.saveTasks(tasks);
+
+        // Refresh UI in the main controller
+        if (mainController != null) {
+            mainController.refreshTaskList();
+        }
+
+        Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
+        stage.close();
+    }
+
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
