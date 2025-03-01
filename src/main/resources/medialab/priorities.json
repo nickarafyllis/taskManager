@@ -1,1 +1,7 @@
-["high","low"]
+[
+  "Default",
+  "Low",
+  "Medium",
+  "High",
+  "Urgent"
+]

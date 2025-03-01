@@ -1,41 +1,85 @@
 [
   {
-    "title": "sddf",
-    "description": "sdfdfsdf",
+    "title": "Complete JavaFX Project",
+    "description": "Finalize the task manager project and test all features.",
     "category": {
-      "name": "moneydance"
+      "name": "Work"
     },
     "priority": {
-      "name": "medium"
+      "name": "High"
     },
-    "deadline": "2025-02-27",
+    "deadline": "2024-03-10",
+    "status": "Open",
+    "reminders": [
+      {
+        "dateTime": "2024-03-09T08:00:00",
+        "taskId": "Complete JavaFX Project",
+        "type": "One day before"
+      }
+    ]
+  },
+  {
+    "title": "Grocery Shopping",
+    "description": "Buy vegetables, fruits, and other essentials.",
+    "category": {
+      "name": "Shopping"
+    },
+    "priority": {
+      "name": "Low"
+    },
+    "deadline": "2024-03-12",
     "status": "Open",
     "reminders": []
   },
   {
-    "title": "dsdf",
-    "description": "sddfsdfdf",
+    "title": "Gym Workout",
+    "description": "Upper body strength training and cardio.",
     "category": {
-      "name": "dsfdf"
+      "name": "Fitness"
     },
     "priority": {
-      "name": "dfsfdf"
+      "name": "Medium"
     },
-    "deadline": "2025-02-28",
-    "status": "Open",
-    "reminders": []
+    "deadline": "2024-03-11",
+    "status": "In_Progress",
+    "reminders": [
+      {
+        "dateTime": "2024-03-10T10:00:00",
+        "taskId": "Gym Workout",
+        "type": "One day before"
+      }
+    ]
   },
   {
-    "title": "finish",
-    "description": "hahah",
+    "title": "Read JavaFX Documentation",
+    "description": "Go through the official JavaFX documentation.",
     "category": {
-      "name": "moneydance"
+      "name": "Study"
     },
     "priority": {
-      "name": "high"
+      "name": "Medium"
     },
-    "deadline": "2025-02-26",
+    "deadline": "2024-03-15",
     "status": "Open",
+    "reminders": [
+      {
+        "dateTime": "2024-03-08T09:00:00",
+        "taskId": "Read JavaFX Documentation",
+        "type": "One week before"
+      }
+    ]
+  },
+  {
+    "title": "Client Meeting",
+    "description": "Discuss project updates with the client.",
+    "category": {
+      "name": "Work"
+    },
+    "priority": {
+      "name": "Urgent"
+    },
+    "deadline": "2024-03-07",
+    "status": "Completed",
     "reminders": []
   }
 ]
