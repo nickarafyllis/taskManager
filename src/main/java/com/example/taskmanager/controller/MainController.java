@@ -2,6 +2,8 @@ package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.storage.TaskStorage;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,10 +16,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
+
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainController {
 
@@ -54,9 +63,11 @@ public class MainController {
     @FXML
     private ComboBox<String> searchPriorityComboBox;
 
+    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
+
     private List<Task> allTasks = new ArrayList<>(); // Initialize to avoid null pointer
 
-
+    private static final Gson gson = new Gson();
 
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
@@ -127,31 +138,55 @@ public class MainController {
             }
         });
 
+        // Populate category and priority filters
+        loadCategoriesAndPriorities();
 
         refreshTaskList();
 
-        // Populate category and priority filters
-        loadCategoriesAndPriorities();
     }
 
-    // Load all categories & priorities into ComboBoxes
+
     private void loadCategoriesAndPriorities() {
-        List<Task> tasks = TaskStorage.loadTasks();
-        List<String> categories = tasks.stream()
-                .map(task -> task.getCategory() != null ? task.getCategory().getName() : null)
-                .filter(name -> name != null && !name.isEmpty())
-                .distinct()
-                .toList();
+        File categoriesFile = new File("src/main/resources/medialab/categories.json");
+        File prioritiesFile = new File("src/main/resources/medialab/priorities.json");
 
-        List<String> priorities = tasks.stream()
-                .map(task -> task.getPriority() != null ? task.getPriority().getName() : null)
-                .filter(name -> name != null && !name.isEmpty())
-                .distinct()
-                .toList();
+        try {
+            // ✅ Load Categories
+            if (categoriesFile.exists()) {
+                try (Reader reader = new FileReader(categoriesFile)) {
+                    Type listType = new TypeToken<List<String>>() {}.getType();
+                    List<String> storedCategories = gson.fromJson(reader, listType);
 
-        searchCategoryComboBox.getItems().setAll(categories);
-        searchPriorityComboBox.getItems().setAll(priorities);
+                    if (storedCategories == null) {
+                        storedCategories = List.of();
+                    }
+
+                    // ✅ Set items for both task and search dropdowns
+                    //categoryComboBox.setItems(FXCollections.observableArrayList(storedCategories));
+                    searchCategoryComboBox.setItems(FXCollections.observableArrayList(storedCategories));
+                }
+            }
+
+            // ✅ Load Priorities
+            if (prioritiesFile.exists()) {
+                try (Reader reader = new FileReader(prioritiesFile)) {
+                    Type listType = new TypeToken<List<String>>() {}.getType();
+                    List<String> storedPriorities = gson.fromJson(reader, listType);
+
+                    if (storedPriorities == null) {
+                        storedPriorities = List.of();
+                    }
+
+                    // ✅ Set items for both task and search dropdowns
+                    //priorityComboBox.setItems(FXCollections.observableArrayList(storedPriorities));
+                    searchPriorityComboBox.setItems(FXCollections.observableArrayList(storedPriorities));
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error loading categories and priorities", e);
+        }
     }
+
 
     // Handle search button click
     @FXML
@@ -226,14 +261,23 @@ public class MainController {
         }
     }
 
+    public TableView<Task> getTaskTable() {
+        return taskTable;
+    }
+
+
     @FXML
     private void openManageCategoriesWindow() {
         openWindow("/views/manage_categories.fxml", "Manage Categories", 500, 400);
+        loadCategoriesAndPriorities(); // Refresh after closing
+        refreshTaskList();
     }
 
     @FXML
     private void openManagePrioritiesWindow() {
         openWindow("/views/manage_priorities.fxml", "Manage Priorities", 500, 400);
+        loadCategoriesAndPriorities(); // Refresh after closing
+        refreshTaskList();
     }
 
     @FXML
@@ -291,6 +335,13 @@ public class MainController {
 
         updateTaskStatistics(allTasks);
     }
+
+    public void refreshTableView(TableView<Task> tableView, List<Task> updatedTasks) {
+        ObservableList<Task> observableTaskList = FXCollections.observableArrayList(updatedTasks);
+        tableView.setItems(observableTaskList);
+        tableView.refresh(); // Force UI update
+    }
+
 
     private void updateTaskStatistics(List<Task> tasks) {
         int total = tasks.size();

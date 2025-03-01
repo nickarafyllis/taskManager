@@ -1,5 +1,7 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.storage.*;
+import com.example.taskmanager.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
@@ -23,11 +25,11 @@ public class ManageCategoriesController {
     private static final String FILE_PATH = "src/main/resources/medialab/categories.json";
     private static final Gson gson = new Gson();
 
-    private MainController mainController;
+//    private MainController mainController;
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
+//    public void setMainController(MainController mainController) {
+//        this.mainController = mainController;
+//    }
 
     @FXML
     public void initialize() {
@@ -43,9 +45,6 @@ public class ManageCategoriesController {
             categoryInput.clear();
             saveCategories();
             loadCategories(); // Ensure UI refresh after saving
-            if (mainController != null) {
-                mainController.refreshTaskList();
-            }
         }
     }
 
@@ -58,24 +57,59 @@ public class ManageCategoriesController {
             categoryInput.clear();
             saveCategories();
             loadCategories(); // Ensure UI refresh after saving
-            if (mainController != null) {
-                mainController.refreshTaskList();
-            }
         }
     }
 
     @FXML
     private void handleDeleteCategory() {
         String selectedCategory = categoryListView.getSelectionModel().getSelectedItem();
-        if (selectedCategory != null) {
-            categories.remove(selectedCategory);
-            saveCategories();
-            loadCategories(); // Ensure UI refresh after saving
-            if (mainController != null) {
-                mainController.refreshTaskList();
-            }
+
+        if (selectedCategory == null) {
+            showAlert("Error", "No category selected.");
+            return;
         }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Category Deletion");
+        alert.setHeaderText("Are you sure you want to delete this category?");
+        alert.setContentText("All tasks under this category and their reminders will also be deleted.");
+
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        // ✅ Remove category from list and save
+        categories.remove(selectedCategory);
+        saveCategories();
+
+        // ✅ Load tasks and remove those belonging to the deleted category
+        List<Task> tasks = TaskStorage.loadTasks();
+        List<Task> remainingTasks = tasks.stream()
+                .filter(task -> task.getCategory() == null || !task.getCategory().getName().equals(selectedCategory))
+                .toList();
+
+        TaskStorage.saveTasks(remainingTasks);
+
+        // ✅ Remove related reminders
+        List<Reminder> reminders = ReminderStorage.loadReminders();
+        if (reminders == null) {
+            reminders = new ArrayList<>();
+        }
+        List<Reminder> updatedReminders = reminders.stream()
+                .filter(reminder -> remainingTasks.stream()
+                        .anyMatch(task -> task.getTitle().equals(reminder.getTaskId())))
+                .toList();
+
+        ReminderStorage.saveReminders(updatedReminders);
+
+        // ✅ Refresh UI
+        loadCategories();
+
+        showAlert("Success", "Category and all related tasks and reminders deleted.");
     }
+
+
+
 
     @FXML
     private void handleClose() {
@@ -108,9 +142,18 @@ public class ManageCategoriesController {
             file.getParentFile().mkdirs(); // Ensure directory exists
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(categories, writer);
+                loadCategories();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

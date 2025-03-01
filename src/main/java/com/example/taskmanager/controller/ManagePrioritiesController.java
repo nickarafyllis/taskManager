@@ -1,5 +1,7 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.storage.*;
+import com.example.taskmanager.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
@@ -58,6 +60,7 @@ public class ManagePrioritiesController {
             priorities.remove(selectedPriority);
             savePriorities();
             refreshTaskCreationOptions();
+            loadPriorities();
         }
     }
 
@@ -87,6 +90,7 @@ public class ManagePrioritiesController {
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(priorities, writer);
             }
+            loadPriorities();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,6 +98,6 @@ public class ManagePrioritiesController {
 
     private void refreshTaskCreationOptions() {
         // Placeholder for UI update logic to refresh the dropdown menu in task creation
-        System.out.println("Priorities updated! UI needs to refresh task creation dropdown.");
+        //System.out.println("Priorities updated! UI needs to refresh task creation dropdown.");
     }
 }
