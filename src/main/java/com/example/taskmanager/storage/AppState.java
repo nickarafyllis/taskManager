@@ -1,8 +1,6 @@
 package com.example.taskmanager.storage;
 
 import com.example.taskmanager.model.Task;
-import com.example.taskmanager.model.Category;
-import com.example.taskmanager.model.Priority;
 import com.example.taskmanager.utils.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

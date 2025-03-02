@@ -115,7 +115,7 @@ public class ManagePrioritiesController {
         List<String> storedPriorities = AppState.getInstance().getPriorities();
 
         if (!storedPriorities.contains("Default")) {
-            storedPriorities.add(0, "Default"); // Ensure "Default" is always first
+            storedPriorities.addFirst("Default"); // Ensure "Default" is always first
         }
         priorities.setAll(storedPriorities);
     }

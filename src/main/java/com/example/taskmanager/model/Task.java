@@ -71,13 +71,6 @@ public class Task {
         AppState.getInstance().saveData();
     }
 
-    public void removeReminder(Reminder reminder) {
-        if (reminders != null) {
-            reminders.remove(reminder);
-            AppState.getInstance().saveData();
-        }
-    }
-
     public void setReminders(List<Reminder> reminders) {
         this.reminders = reminders;
     }

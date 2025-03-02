@@ -54,8 +54,6 @@ public class MainController {
     @FXML
     private ComboBox<String> searchPriorityComboBox;
 
-    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
-
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
 
     @FXML

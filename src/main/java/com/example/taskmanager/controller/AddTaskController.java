@@ -23,12 +23,6 @@ public class AddTaskController {
     @FXML
     private Button saveTaskButton;
 
-    private MainController mainController;
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
-
     @FXML
     public void initialize() {
         // ✅ Load categories & priorities from memory instead of JSON files
