@@ -30,7 +30,7 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <DatePicker fx:id="specificDatePicker" visible="false" promptText="Select Date"/>
+        <DatePicker fx:id="specificDatePicker" promptText="Select Date"/>
         <Button fx:id="addReminderButton" text="Add Reminder" onAction="#handleAddReminder"/>
     </HBox>
 
