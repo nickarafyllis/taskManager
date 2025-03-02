@@ -1,5 +1,7 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.model.Category;
+import com.example.taskmanager.model.Task;
 import com.example.taskmanager.storage.AppState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,11 +65,21 @@ public class ManageCategoriesController {
             return;
         }
 
+        // ✅ Update category name in the tasks
+        for (Task task : AppState.getInstance().getTasks()) {
+            if (task.getCategory() != null && task.getCategory().getName().equals(selectedCategory)) {
+                task.setCategory(new Category(newCategory));
+            }
+        }
+
+        // ✅ Update category in the list
         categories.set(categories.indexOf(selectedCategory), newCategory);
-        categoryInput.clear();
+
+        // ✅ Save changes
         saveCategories();
         showAlert("Success", "Category updated successfully.");
     }
+
 
     @FXML
     private void handleDeleteCategory() {
@@ -110,6 +122,6 @@ public class ManageCategoriesController {
     private void saveCategories() {
         AppState.getInstance().getCategories().clear();
         AppState.getInstance().getCategories().addAll(categories);
-        LOGGER.log(Level.INFO, "Categories updated in memory.");
+        //LOGGER.log(Level.INFO, "Categories updated in memory.");
     }
 }

@@ -63,17 +63,26 @@ public class ManagePrioritiesController {
             showAlert("Error", "Priority already exists.");
             return;
         }
-
         if (selectedPriority.equals("Default")) {
             showAlert("Error", "The 'Default' priority cannot be renamed.");
             return;
         }
 
+        // ✅ Update priority name in tasks
+        for (Task task : AppState.getInstance().getTasks()) {
+            if (task.getPriority() != null && task.getPriority().getName().equals(selectedPriority)) {
+                task.setPriority(new Priority(newPriority));
+            }
+        }
+
+        // ✅ Update priority in the list
         priorities.set(priorities.indexOf(selectedPriority), newPriority);
-        priorityInput.clear();
+
+        // ✅ Save changes
         savePriorities();
         showAlert("Success", "Priority updated successfully.");
     }
+
 
     @FXML
     private void handleDeletePriority() {
@@ -123,6 +132,6 @@ public class ManagePrioritiesController {
     private void savePriorities() {
         AppState.getInstance().getPriorities().clear();
         AppState.getInstance().getPriorities().addAll(priorities);
-        LOGGER.log(Level.INFO, "Priorities updated in memory.");
+        //LOGGER.log(Level.INFO, "Priorities updated in memory.");
     }
 }

@@ -189,7 +189,7 @@ public class ManageRemindersController {
                 .findFirst()
                 .ifPresent(t -> t.setReminders(task.getReminders()));
 
-        LOGGER.log(Level.INFO, "Reminder deleted: " + reminder.getType() + " for task: " + task.getTitle());
+        //LOGGER.log(Level.INFO, "Reminder deleted: " + reminder.getType() + " for task: " + task.getTitle());
 
         // Refresh UI
         loadReminders();

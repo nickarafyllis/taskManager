@@ -37,7 +37,7 @@ public class ViewAllRemindersController {
         typeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getType()));
         dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDateTime().format(FORMATTER)));
 
-        LOGGER.log(Level.INFO, "Reminder Table initialized.");
+        //LOGGER.log(Level.INFO, "Reminder Table initialized.");
 
         // Load reminders into the table
         loadReminders();
@@ -49,15 +49,15 @@ public class ViewAllRemindersController {
 
         LOGGER.log(Level.INFO, "🔍 Searching for reminders...");
         for (Task task : tasks) {
-            LOGGER.log(Level.INFO, "📌 Checking Task: " + task.getTitle() + " | Reminders: " + task.getReminders().size());
+            //LOGGER.log(Level.INFO, "📌 Checking Task: " + task.getTitle() + " | Reminders: " + task.getReminders().size());
             reminders.addAll(task.getReminders());
         }
 
-        if (reminders.isEmpty()) {
-            LOGGER.log(Level.WARNING, "⚠️ No reminders found.");
-        } else {
-            LOGGER.log(Level.INFO, "✅ Total reminders loaded: " + reminders.size());
-        }
+//        if (reminders.isEmpty()) {
+//            LOGGER.log(Level.WARNING, "⚠️ No reminders found.");
+//        } else {
+//            LOGGER.log(Level.INFO, "✅ Total reminders loaded: " + reminders.size());
+//        }
 
         reminderTable.setItems(reminders);
         reminderTable.refresh();
