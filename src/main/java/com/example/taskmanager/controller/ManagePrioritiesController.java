@@ -1,17 +1,16 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.storage.AppState;
 import com.example.taskmanager.model.Priority;
 import com.example.taskmanager.model.Task;
-import com.example.taskmanager.storage.TaskStorage;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import java.io.*;
-import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static com.example.taskmanager.utils.AlertUtil.*;
 
 public class ManagePrioritiesController {
 
@@ -21,8 +20,7 @@ public class ManagePrioritiesController {
     private TextField priorityInput;
 
     private final ObservableList<String> priorities = FXCollections.observableArrayList();
-    private static final String FILE_PATH = "src/main/resources/medialab/priorities.json";
-    private static final Gson gson = new Gson();
+    private static final Logger LOGGER = Logger.getLogger(ManagePrioritiesController.class.getName());
 
     @FXML
     public void initialize() {
@@ -33,11 +31,18 @@ public class ManagePrioritiesController {
     @FXML
     private void handleAddPriority() {
         String newPriority = priorityInput.getText().trim();
-        if (!newPriority.isEmpty() && !priorities.contains(newPriority)) {
+        if (newPriority.isEmpty()) {
+            showAlert("Error", "Priority name cannot be empty.");
+            return;
+        }
+
+        if (!priorities.contains(newPriority)) {
             priorities.add(newPriority);
             priorityInput.clear();
             savePriorities();
-            refreshTaskCreationOptions();
+            showAlert("Success", "Priority added successfully.");
+        } else {
+            showAlert("Error", "Priority already exists.");
         }
     }
 
@@ -46,8 +51,17 @@ public class ManagePrioritiesController {
         String selectedPriority = priorityListView.getSelectionModel().getSelectedItem();
         String newPriority = priorityInput.getText().trim();
 
-        if (selectedPriority == null || newPriority.isEmpty() || priorities.contains(newPriority)) {
-            return; // Invalid input
+        if (selectedPriority == null) {
+            showAlert("Error", "No priority selected.");
+            return;
+        }
+        if (newPriority.isEmpty()) {
+            showAlert("Error", "New priority name cannot be empty.");
+            return;
+        }
+        if (priorities.contains(newPriority)) {
+            showAlert("Error", "Priority already exists.");
+            return;
         }
 
         if (selectedPriority.equals("Default")) {
@@ -58,9 +72,8 @@ public class ManagePrioritiesController {
         priorities.set(priorities.indexOf(selectedPriority), newPriority);
         priorityInput.clear();
         savePriorities();
-        refreshTaskCreationOptions();
+        showAlert("Success", "Priority updated successfully.");
     }
-
 
     @FXML
     private void handleDeletePriority() {
@@ -76,7 +89,6 @@ public class ManagePrioritiesController {
             return;
         }
 
-        // Confirm deletion
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Deletion");
         alert.setHeaderText("Delete priority: " + selectedPriority);
@@ -86,68 +98,31 @@ public class ManagePrioritiesController {
             return;
         }
 
-        // Remove from list and save
+        // ✅ Remove priority and update in-memory storage
         priorities.remove(selectedPriority);
-        savePriorities();
-
-        // ✅ Update tasks that had the deleted priority
-        List<Task> tasks = TaskStorage.loadTasks();
+        List<Task> tasks = AppState.getInstance().getTasks();
         for (Task task : tasks) {
             if (task.getPriority() != null && task.getPriority().getName().equals(selectedPriority)) {
                 task.setPriority(new Priority("Default")); // Assign "Default"
             }
         }
-        TaskStorage.saveTasks(tasks);
 
-        refreshTaskCreationOptions();
-        loadPriorities();
+        savePriorities();
+        showAlert("Success", "Priority deleted, and all affected tasks reassigned.");
     }
-
 
     private void loadPriorities() {
-        File file = new File(FILE_PATH);
-        if (file.exists()) {
-            try (Reader reader = new FileReader(file)) {
-                Type listType = new TypeToken<List<String>>() {}.getType();
-                List<String> loadedPriorities = gson.fromJson(reader, listType);
+        List<String> storedPriorities = AppState.getInstance().getPriorities();
 
-                if (!loadedPriorities.contains("Default")) {
-                    loadedPriorities.add(0, "Default"); // Ensure Default is always first
-                }
-                priorities.setAll(loadedPriorities);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            priorities.setAll("Default"); // First-time initialization
-            savePriorities(); // Save the default list
+        if (!storedPriorities.contains("Default")) {
+            storedPriorities.add(0, "Default"); // Ensure "Default" is always first
         }
+        priorities.setAll(storedPriorities);
     }
-
 
     private void savePriorities() {
-        File file = new File(FILE_PATH);
-        try {
-            file.getParentFile().mkdirs(); // Ensure directory exists
-            try (Writer writer = new FileWriter(file)) {
-                gson.toJson(priorities, writer);
-            }
-            loadPriorities();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void refreshTaskCreationOptions() {
-        // Placeholder for UI update logic to refresh the dropdown menu in task creation
-        //System.out.println("Priorities updated! UI needs to refresh task creation dropdown.");
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+        AppState.getInstance().getPriorities().clear();
+        AppState.getInstance().getPriorities().addAll(priorities);
+        LOGGER.log(Level.INFO, "Priorities updated in memory.");
     }
 }

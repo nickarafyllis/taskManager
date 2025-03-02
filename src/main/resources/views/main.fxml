@@ -8,7 +8,7 @@
             styleClass="root">
 
     <top>
-        <VBox spacing="10" style="-fx-padding: 10;">
+        <VBox spacing="10" style="-fx-padding: 10;" VBox.vgrow="NEVER">
             <Label text="MediaLab Assistant" styleClass="title-label" />
             <HBox spacing="20" styleClass="stats-container">
                 <Label fx:id="totalTasksLabel" text="Total Tasks: 0" styleClass="stat-label" />
@@ -19,7 +19,7 @@
 
             <!-- Search Bar -->
             <HBox spacing="10" style="-fx-padding: 10;" styleClass="search-container">
-                <TextField fx:id="searchTitleField" promptText="Search by Title" styleClass="search-field"/>
+                <TextField fx:id="searchTitleField" promptText="Search by Title" styleClass="search-field" HBox.hgrow="ALWAYS"/>
                 <ComboBox fx:id="searchCategoryComboBox" promptText="Filter by Category" styleClass="dropdown"/>
                 <ComboBox fx:id="searchPriorityComboBox" promptText="Filter by Priority" styleClass="dropdown"/>
                 <Button text="Search" onAction="#handleSearch" styleClass="primary-button"/>
@@ -29,22 +29,23 @@
     </top>
 
     <center>
-        <TableView fx:id="taskTable" minWidth="800" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
+        <TableView fx:id="taskTable" minWidth="800" minHeight="150"
+                   VBox.vgrow="ALWAYS" BorderPane.alignment="CENTER" styleClass="table-view">
             <columns>
-                <TableColumn fx:id="titleColumn" text="Title" minWidth="130" />
-                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="320" />
-                <TableColumn fx:id="categoryColumn" text="Category" minWidth="60" />
-                <TableColumn fx:id="priorityColumn" text="Priority" minWidth="50" />
-                <TableColumn fx:id="deadlineColumn" text="Deadline" minWidth="60" />
-                <TableColumn fx:id="statusColumn" text="Status" minWidth="140" />
-                <TableColumn text="Actions" fx:id="editColumn" minWidth="20" />
-                <TableColumn text="Reminders" fx:id="reminderColumn" minWidth="70" />
+                <TableColumn fx:id="titleColumn" text="Title" minWidth="120"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" minWidth="320"/>
+                <TableColumn fx:id="categoryColumn" text="Category" minWidth="60"/>
+                <TableColumn fx:id="priorityColumn" text="Priority" minWidth="50"/>
+                <TableColumn fx:id="deadlineColumn" text="Deadline" minWidth="60"/>
+                <TableColumn fx:id="statusColumn" text="Status" minWidth="150"/>
+                <TableColumn text="Actions" fx:id="editColumn" minWidth="20"/>
+                <TableColumn text="Reminders" fx:id="reminderColumn" minWidth="60"/>
             </columns>
         </TableView>
     </center>
 
     <bottom>
-        <VBox spacing="10" style="-fx-padding: 10;">
+        <VBox spacing="10" style="-fx-padding: 10;" VBox.vgrow="NEVER">
             <HBox spacing="10" styleClass="button-container">
                 <Button fx:id="addButton" text="Add Task" onAction="#openAddTaskWindow" styleClass="primary-button"/>
             </HBox>

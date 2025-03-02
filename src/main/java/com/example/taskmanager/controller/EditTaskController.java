@@ -1,18 +1,12 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.*;
-import com.example.taskmanager.storage.TaskStorage;
-import com.google.gson.reflect.TypeToken;
+import com.example.taskmanager.storage.AppState;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import com.google.gson.Gson;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.List;
 import static com.example.taskmanager.utils.AlertUtil.*;
 
@@ -33,17 +27,15 @@ public class EditTaskController {
     @FXML
     private Button deleteTaskButton;
 
-    private static final Gson gson = new Gson();
-
     private Task task;
     private MainController mainController;
 
     public void setTask(Task task) {
         this.task = task;
 
-        // Load categories & priorities from memory (not a separate storage class)
-        loadCategories();
-        loadPriorities();
+        // Load categories & priorities from in-memory AppState
+        categoryComboBox.setItems(FXCollections.observableArrayList(AppState.getInstance().getCategories()));
+        priorityComboBox.setItems(FXCollections.observableArrayList(AppState.getInstance().getPriorities()));
 
         // Set task details
         taskTitleInput.setText(task.getTitle());
@@ -57,43 +49,9 @@ public class EditTaskController {
             priorityComboBox.getSelectionModel().select(task.getPriority().getName());
         }
 
-        // ✅ Set deadline
-        taskDeadlinePicker.setValue(java.time.LocalDate.parse(task.getDeadline()));
-    }
-
-    private void loadCategories() {
-        File file = new File("src/main/resources/medialab/categories.json");
-        if (file.exists()) {
-            try (Reader reader = new FileReader(file)) {
-                Type listType = new TypeToken<List<String>>() {}.getType();
-                List<String> loadedCategories = gson.fromJson(reader, listType);
-                if (loadedCategories == null) {
-                    loadedCategories = List.of();
-                }
-                categoryComboBox.setItems(FXCollections.observableArrayList(loadedCategories));
-            } catch (IOException e) {
-                logError( "Error loading categories", e);
-            }
-        } else {
-            categoryComboBox.setItems(FXCollections.observableArrayList());
-        }
-    }
-
-    private void loadPriorities() {
-        File file = new File("src/main/resources/medialab/priorities.json");
-        if (file.exists()) {
-            try (Reader reader = new FileReader(file)) {
-                Type listType = new TypeToken<List<String>>() {}.getType();
-                List<String> loadedPriorities = gson.fromJson(reader, listType);
-                if (loadedPriorities == null) {
-                    loadedPriorities = List.of();
-                }
-                priorityComboBox.setItems(FXCollections.observableArrayList(loadedPriorities));
-            } catch (IOException e) {
-                logError("Error loading priorities", e);
-            }
-        } else {
-            priorityComboBox.setItems(FXCollections.observableArrayList());
+        // Set deadline
+        if (task.getDeadline() != null && !task.getDeadline().isEmpty()) {
+            taskDeadlinePicker.setValue(LocalDate.parse(task.getDeadline()));
         }
     }
 
@@ -108,7 +66,8 @@ public class EditTaskController {
             return;
         }
 
-        List<Task> tasks = TaskStorage.loadTasks();
+        // ✅ Retrieve in-memory task list
+        List<Task> tasks = AppState.getInstance().getTasks();
 
         for (Task t : tasks) {
             if (t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline())) {
@@ -117,32 +76,28 @@ public class EditTaskController {
                 t.setCategory(new Category(categoryComboBox.getValue()));
                 t.setPriority(new Priority(priorityComboBox.getValue()));
 
-                // Store the previous status before modifying the deadline
+                // ✅ Store previous status before modifying the deadline
                 Task.TaskStatus previousStatus = t.getStatus();
 
-                // Update the deadline
+                // ✅ Update deadline
                 t.setDeadline(taskDeadlinePicker.getValue().toString());
 
-                // If the previous status was "Delayed" and the new deadline is in the future
-                if (previousStatus == Task.TaskStatus.Delayed && taskDeadlinePicker.getValue().isAfter(java.time.LocalDate.now())) {
-                    // Restore to "Open" or another valid state
-                    t.setStatus(Task.TaskStatus.Open);  // Change this if there was another state before "Delayed"
-                } else if (taskDeadlinePicker.getValue().isBefore(java.time.LocalDate.now())) {
-                    // If the new deadline is still in the past, keep it as "Delayed"
-                    t.setStatus(Task.TaskStatus.Delayed);
+                // ✅ Adjust status based on new deadline
+                if (previousStatus == Task.TaskStatus.Delayed && taskDeadlinePicker.getValue().isAfter(LocalDate.now())) {
+                    t.setStatus(Task.TaskStatus.Open); // Change status back if deadline is in the future
+                } else if (taskDeadlinePicker.getValue().isBefore(LocalDate.now())) {
+                    t.setStatus(Task.TaskStatus.Delayed); // Keep delayed if still past due
                 }
-
                 break;
             }
         }
 
-        // Save the modified task list
-        TaskStorage.saveTasks(tasks);
+        // UI Refresh
+        if (mainController != null) {
+            mainController.refreshTaskList();
+        }
 
-        // Refresh UI
-        mainController.refreshTaskList();
-
-        // Close the edit task window
+        // Close window
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
         stage.close();
     }
@@ -158,17 +113,17 @@ public class EditTaskController {
             return;
         }
 
-        List<Task> tasks = TaskStorage.loadTasks();
+        // Modify in-memory data
+        List<Task> tasks = AppState.getInstance().getTasks();
         tasks.removeIf(t -> t.getTitle().equals(task.getTitle()) && t.getDeadline().equals(task.getDeadline()));
-        TaskStorage.saveTasks(tasks);
 
-        // Refresh UI in the main controller
+        // UI Refresh
         if (mainController != null) {
             mainController.refreshTaskList();
         }
 
+        // Close window
         Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
         stage.close();
     }
-
 }

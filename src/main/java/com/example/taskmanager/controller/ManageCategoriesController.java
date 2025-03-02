@@ -1,18 +1,15 @@
 package com.example.taskmanager.controller;
 
-import com.example.taskmanager.storage.*;
-import com.example.taskmanager.model.*;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.taskmanager.storage.AppState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import java.io.*;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static com.example.taskmanager.utils.AlertUtil.*;
 
 public class ManageCategoriesController {
 
@@ -22,14 +19,7 @@ public class ManageCategoriesController {
     private TextField categoryInput;
 
     private final ObservableList<String> categories = FXCollections.observableArrayList();
-    private static final String FILE_PATH = "src/main/resources/medialab/categories.json";
-    private static final Gson gson = new Gson();
-
-//    private MainController mainController;
-
-//    public void setMainController(MainController mainController) {
-//        this.mainController = mainController;
-//    }
+    private static final Logger LOGGER = Logger.getLogger(ManageCategoriesController.class.getName());
 
     @FXML
     public void initialize() {
@@ -40,11 +30,18 @@ public class ManageCategoriesController {
     @FXML
     private void handleAddCategory() {
         String newCategory = categoryInput.getText().trim();
-        if (!newCategory.isEmpty() && !categories.contains(newCategory)) {
+        if (newCategory.isEmpty()) {
+            showAlert("Error", "Category name cannot be empty.");
+            return;
+        }
+
+        if (!categories.contains(newCategory)) {
             categories.add(newCategory);
             categoryInput.clear();
             saveCategories();
-            loadCategories(); // Ensure UI refresh after saving
+            showAlert("Success", "Category added successfully.");
+        } else {
+            showAlert("Error", "Category already exists.");
         }
     }
 
@@ -52,12 +49,24 @@ public class ManageCategoriesController {
     private void handleEditCategory() {
         String selectedCategory = categoryListView.getSelectionModel().getSelectedItem();
         String newCategory = categoryInput.getText().trim();
-        if (selectedCategory != null && !newCategory.isEmpty() && !categories.contains(newCategory)) {
-            categories.set(categories.indexOf(selectedCategory), newCategory);
-            categoryInput.clear();
-            saveCategories();
-            loadCategories(); // Ensure UI refresh after saving
+
+        if (selectedCategory == null) {
+            showAlert("Error", "No category selected.");
+            return;
         }
+        if (newCategory.isEmpty()) {
+            showAlert("Error", "New category name cannot be empty.");
+            return;
+        }
+        if (categories.contains(newCategory)) {
+            showAlert("Error", "Category already exists.");
+            return;
+        }
+
+        categories.set(categories.indexOf(selectedCategory), newCategory);
+        categoryInput.clear();
+        saveCategories();
+        showAlert("Success", "Category updated successfully.");
     }
 
     @FXML
@@ -70,7 +79,7 @@ public class ManageCategoriesController {
         }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirm Category Deletion");
+        alert.setTitle("Confirm Deletion");
         alert.setHeaderText("Are you sure you want to delete this category?");
         alert.setContentText("All tasks under this category and their reminders will also be deleted.");
 
@@ -78,26 +87,14 @@ public class ManageCategoriesController {
             return;
         }
 
-        // ✅ Remove category from list and save
+        // ✅ Remove category and update in-memory storage
         categories.remove(selectedCategory);
+        AppState.getInstance().getTasks().removeIf(task ->
+                task.getCategory() != null && task.getCategory().getName().equals(selectedCategory));
+
         saveCategories();
-
-        // ✅ Load tasks and remove those belonging to the deleted category
-        List<Task> tasks = TaskStorage.loadTasks();
-        List<Task> remainingTasks = tasks.stream()
-                .filter(task -> task.getCategory() == null || !task.getCategory().getName().equals(selectedCategory))
-                .toList();
-
-        TaskStorage.saveTasks(remainingTasks);
-
-        // ✅ Refresh UI
-        loadCategories();
-
         showAlert("Success", "Category and all related tasks and reminders deleted.");
     }
-
-
-
 
     @FXML
     private void handleClose() {
@@ -106,42 +103,13 @@ public class ManageCategoriesController {
     }
 
     private void loadCategories() {
-        File file = new File(FILE_PATH);
-        if (file.exists()) {
-            try (Reader reader = new FileReader(file)) {
-                Type listType = new TypeToken<List<String>>() {}.getType();
-                List<String> loadedCategories = gson.fromJson(reader, listType);
-                if (loadedCategories == null) {
-                    loadedCategories = new ArrayList<>();
-                }
-                categories.setAll(loadedCategories);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            file.getParentFile().mkdirs(); // Ensure medialab directory exists
-            saveCategories(); // Create an empty file if it doesn't exist
-        }
+        List<String> storedCategories = AppState.getInstance().getCategories();
+        categories.setAll(storedCategories);
     }
 
     private void saveCategories() {
-        File file = new File(FILE_PATH);
-        try {
-            file.getParentFile().mkdirs(); // Ensure directory exists
-            try (Writer writer = new FileWriter(file)) {
-                gson.toJson(categories, writer);
-                loadCategories();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+        AppState.getInstance().getCategories().clear();
+        AppState.getInstance().getCategories().addAll(categories);
+        LOGGER.log(Level.INFO, "Categories updated in memory.");
     }
 }

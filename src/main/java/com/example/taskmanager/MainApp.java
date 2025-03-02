@@ -1,7 +1,7 @@
 package com.example.taskmanager;
 
 import com.example.taskmanager.model.Task;
-import com.example.taskmanager.storage.TaskStorage;
+import com.example.taskmanager.storage.AppState;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,6 +18,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            // Load all data from JSON into memory at startup
+            AppState.getInstance(); // Calls constructor that loads data
+
             // Ensure the FXML file is loaded correctly
             URL fxmlLocation = getClass().getResource("/views/main.fxml");
             if (fxmlLocation == null) {
@@ -27,23 +30,24 @@ public class MainApp extends Application {
             FXMLLoader loader = new FXMLLoader(fxmlLocation);
             BorderPane root = loader.load();
 
-            // Create scene
+            // Create and style the scene
             Scene scene = new Scene(root, 1300, 600);
-
-            // Load CSS file
             URL cssLocation = getClass().getResource("/styles/styles.css");
-            if (cssLocation == null) {
-                throw new IOException("CSS file not found! Check path: /styles/styles.css");
-            }
-            scene.getStylesheets().add(cssLocation.toExternalForm()); // Apply CSS
+            assert cssLocation != null;
+            scene.getStylesheets().add(cssLocation.toExternalForm());
 
             // Set stage properties
             primaryStage.setTitle("MediaLab Assistant");
             primaryStage.setScene(scene);
             primaryStage.show();
 
-            // Check for delayed tasks and show popup if needed
+            // Show notification popups for delayed tasks and today's reminders
             checkDelayedTasksAndReminders();
+
+            // Ensure data is saved before application exits
+            primaryStage.setOnCloseRequest(event -> {
+                AppState.getInstance().saveData();
+            });
 
         } catch (IOException e) {
             logError("Error loading main.fxml", e);
@@ -51,23 +55,23 @@ public class MainApp extends Application {
     }
 
     private void checkDelayedTasksAndReminders() {
-        List<Task> tasks = TaskStorage.loadTasks();
+        List<Task> tasks = AppState.getInstance().getTasks(); // ✅ Fetch from memory
         LocalDate today = LocalDate.now();
 
-        // ✅ Get delayed tasks
+        // Get delayed tasks
         List<String> delayedTaskNames = tasks.stream()
                 .filter(task -> task.getStatus() == Task.TaskStatus.Delayed)
                 .map(Task::getTitle)
                 .toList();
 
-        // ✅ Get today's reminders
+        // Get today's reminders
         List<String> todaysReminders = tasks.stream()
                 .flatMap(task -> task.getReminders().stream()
                         .filter(reminder -> reminder.getDateTime().toLocalDate().isEqual(today))
                         .map(reminder -> task.getTitle() + " - " + reminder.getType()))
                 .toList();
 
-        // ✅ Build the alert message
+        // Build the alert message
         StringBuilder message = new StringBuilder();
 
         if (!delayedTaskNames.isEmpty()) {
@@ -84,15 +88,13 @@ public class MainApp extends Application {
             message.append("- ").append(String.join("\n- ", todaysReminders)).append("\n");
         }
 
-        // ✅ Show the alert only if there are delayed tasks or reminders
+        // Show the alert only if there are delayed tasks or reminders
         if (!message.isEmpty()) {
             showAlert("Task Notifications", message.toString());
         }
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
 }
-

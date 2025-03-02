@@ -1,7 +1,6 @@
 package com.example.taskmanager.model;
 
-import com.example.taskmanager.storage.TaskStorage;
-
+import com.example.taskmanager.storage.AppState;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class Task {
     private Category category;
     private Priority priority;
     private String deadline; // Stored as String in format "YYYY-MM-DD"
-    private TaskStatus status; // Open, In Progress, Postponed, Completed, Delayed
+    private TaskStatus status;
     private List<Reminder> reminders;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -67,24 +66,29 @@ public class Task {
             reminders = new ArrayList<>();
         }
         reminders.add(reminder);
-        TaskStorage.saveTasks(TaskStorage.loadTasks()); // ✅ Save tasks after updating reminders
+
+        // ✅ Save reminders in-memory and persist at app shutdown
+        AppState.getInstance().saveData();
     }
 
-
-    public void removeReminder(Reminder reminder) { this.reminders.remove(reminder); }
-
-    // Convert deadline to LocalDate
-    public LocalDate getDeadlineAsLocalDate() {
-        return (deadline != null && !deadline.isEmpty()) ? LocalDate.parse(deadline, FORMATTER) : null;
-    }
-
-    // Set deadline from LocalDate
-    public void setDeadlineFromLocalDate(LocalDate date) {
-        this.deadline = (date != null) ? date.format(FORMATTER) : null;
+    public void removeReminder(Reminder reminder) {
+        if (reminders != null) {
+            reminders.remove(reminder);
+            AppState.getInstance().saveData();
+        }
     }
 
     public void setReminders(List<Reminder> reminders) {
         this.reminders = reminders;
     }
 
+    // ✅ Convert deadline to LocalDate
+    public LocalDate getDeadlineAsLocalDate() {
+        return (deadline != null && !deadline.isEmpty()) ? LocalDate.parse(deadline, FORMATTER) : null;
+    }
+
+    // ✅ Set deadline from LocalDate
+    public void setDeadlineFromLocalDate(LocalDate date) {
+        this.deadline = (date != null) ? date.format(FORMATTER) : null;
+    }
 }
