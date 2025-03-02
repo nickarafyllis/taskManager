@@ -16,7 +16,6 @@ import javafx.scene.layout.HBox;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Logger;
 import static com.example.taskmanager.utils.AlertUtil.*;
 
 public class MainController {

@@ -8,7 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.example.taskmanager.utils.AlertUtil.*;
 
@@ -20,7 +19,6 @@ public class ManagePrioritiesController {
     private TextField priorityInput;
 
     private final ObservableList<String> priorities = FXCollections.observableArrayList();
-    private static final Logger LOGGER = Logger.getLogger(ManagePrioritiesController.class.getName());
 
     @FXML
     public void initialize() {

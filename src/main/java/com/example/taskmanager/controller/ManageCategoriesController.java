@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import static com.example.taskmanager.utils.AlertUtil.*;
 
@@ -21,7 +20,6 @@ public class ManageCategoriesController {
     private TextField categoryInput;
 
     private final ObservableList<String> categories = FXCollections.observableArrayList();
-    private static final Logger LOGGER = Logger.getLogger(ManageCategoriesController.class.getName());
 
     @FXML
     public void initialize() {
@@ -106,12 +104,6 @@ public class ManageCategoriesController {
 
         saveCategories();
         showAlert("Success", "Category and all related tasks and reminders deleted.");
-    }
-
-    @FXML
-    private void handleClose() {
-        Stage stage = (Stage) categoryListView.getScene().getWindow();
-        stage.close();
     }
 
     private void loadCategories() {
