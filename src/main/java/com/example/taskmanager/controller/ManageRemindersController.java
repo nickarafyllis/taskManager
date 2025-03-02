@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +28,6 @@ public class ManageRemindersController {
     private ComboBox<String> reminderTypeComboBox;
     @FXML
     private DatePicker specificDatePicker;
-    @FXML
-    private Button addReminderButton;
 
     private Task task;
     private ObservableList<Reminder> reminders = FXCollections.observableArrayList();
@@ -197,8 +194,6 @@ public class ManageRemindersController {
         loadReminders();
         showAlert("Success", "Reminder added successfully.");
     }
-
-
 
 
     @FXML
