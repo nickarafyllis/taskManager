@@ -23,8 +23,8 @@ Task Manager is a JavaFX-based application designed to help users efficiently cr
 ### Steps
 1. Clone this repository:
    ```sh
-   git clone https://github.com/yourusername/task-manager.git
-   cd task-manager
+   git clone https://github.com/nickarafyllis/taskManager.git
+   cd taskManager
    ```
 2. Build the project using Maven:
    ```sh
