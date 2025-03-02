@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.List;
+import static com.example.taskmanager.utils.AlertUtil.*;
 
 public class AddTaskController {
 
@@ -29,7 +30,6 @@ public class AddTaskController {
 
     private static final String CATEGORIES_FILE = "src/main/resources/medialab/categories.json";
     private static final String PRIORITIES_FILE = "src/main/resources/medialab/priorities.json";
-    private static final String TASKS_FILE = "src/main/resources/medialab/tasks.json";
     private static final Gson gson = new Gson();
 
     private MainController mainController;
@@ -55,10 +55,11 @@ public class AddTaskController {
                 }
                 categoryComboBox.setItems(FXCollections.observableArrayList(loadedCategories));
             } catch (IOException e) {
-                e.printStackTrace();
+                logError("Error loading categories from file: " + CATEGORIES_FILE, e);
             }
         } else {
             categoryComboBox.setItems(FXCollections.observableArrayList());
+            logError("Category file not found: " + CATEGORIES_FILE, null);
         }
     }
 
@@ -73,12 +74,15 @@ public class AddTaskController {
                 }
                 priorityComboBox.setItems(FXCollections.observableArrayList(loadedPriorities));
             } catch (IOException e) {
-                e.printStackTrace();
+                logError("Error loading priorities from file: " + PRIORITIES_FILE, e);
             }
         } else {
             priorityComboBox.setItems(FXCollections.observableArrayList());
+            logError("Priority file not found: " + PRIORITIES_FILE, null);
         }
     }
+
+
 
     @FXML
     private void handleSaveTask() {
@@ -105,13 +109,5 @@ public class AddTaskController {
 
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
         stage.close();
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

@@ -70,10 +70,10 @@ public class ManageRemindersController {
             }
         });
 
-        // ✅ Ensure DatePicker is disabled initially
+        // Ensure DatePicker is disabled initially
         specificDatePicker.setDisable(true);
 
-        // ✅ Add a listener to enable DatePicker when "Choose date" is selected
+        // Add a listener to enable DatePicker when "Choose date" is selected
         reminderTypeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if ("Choose date".equals(newVal)) {
                 specificDatePicker.setDisable(false);
@@ -83,8 +83,6 @@ public class ManageRemindersController {
             }
         });
     }
-
-
 
     public void setTask(Task task) {
         this.task = task;
@@ -128,7 +126,7 @@ public class ManageRemindersController {
         }
 
         String selectedType = reminderTypeComboBox.getValue();
-        LocalDateTime reminderDateTime = null;
+        LocalDate reminderDate = null;
 
         if (selectedType == null) {
             showAlert("Error", "Please select a reminder type.");
@@ -141,46 +139,47 @@ public class ManageRemindersController {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now(); // ✅ Get the current date and time
+        LocalDate today = LocalDate.now(); // ✅ Get today's date
 
-        // ✅ Determine reminder date based on selection
+        // Determine reminder date based on selection
         switch (selectedType) {
             case "One day before":
-                reminderDateTime = taskDeadline.minusDays(1).atStartOfDay();
+                reminderDate = taskDeadline.minusDays(1);
                 break;
             case "One week before":
-                reminderDateTime = taskDeadline.minusWeeks(1).atStartOfDay();
+                reminderDate = taskDeadline.minusWeeks(1);
                 break;
             case "One month before":
-                reminderDateTime = taskDeadline.minusMonths(1).atStartOfDay();
+                reminderDate = taskDeadline.minusMonths(1);
                 break;
             case "Choose date":
                 if (specificDatePicker.getValue() == null) {
                     showAlert("Error", "Please select a date.");
                     return;
                 }
-                reminderDateTime = specificDatePicker.getValue().atStartOfDay();
+                reminderDate = specificDatePicker.getValue();
                 selectedType = "Custom Date"; // ✅ Display as "Custom Date" instead of "Choose Date"
                 break;
         }
 
-        // ✅ Ensure the reminder is in the future
-        if (reminderDateTime.isBefore(now)) {
+        // Ensure the reminder is in the future
+        assert reminderDate != null;
+        if (reminderDate.isBefore(today)) {
             showAlert("Error", "The reminder date cannot be in the past.");
             return;
         }
 
-        // ✅ Ensure the reminder is before the task deadline
-        if (reminderDateTime.isAfter(taskDeadline.atStartOfDay())) {
+        // Ensure the reminder is before the task deadline
+        if (reminderDate.isAfter(taskDeadline)) {
             showAlert("Error", "The reminder must be set before the task deadline.");
             return;
         }
 
-        // ✅ Create and add the reminder
-        Reminder newReminder = new Reminder(reminderDateTime, task.getTitle(), selectedType);
+        // Create and add the reminder (convert LocalDate to LocalDateTime at start of day)
+        Reminder newReminder = new Reminder(reminderDate.atStartOfDay(), task.getTitle(), selectedType);
         task.addReminder(newReminder);
 
-        // ✅ Save updated task list
+        // Save updated task list
         List<Task> tasks = TaskStorage.loadTasks();
         for (Task t : tasks) {
             if (t.getTitle().equals(task.getTitle())) {
@@ -190,11 +189,10 @@ public class ManageRemindersController {
         }
         TaskStorage.saveTasks(tasks);
 
-        // ✅ Refresh UI
+        // Refresh UI
         loadReminders();
         showAlert("Success", "Reminder added successfully.");
     }
-
 
     @FXML
     private void handleDeleteReminder(Reminder reminder) {
@@ -207,10 +205,10 @@ public class ManageRemindersController {
             return;
         }
 
-        // ✅ Remove reminder from the task
+        // Remove reminder from the task
         task.getReminders().remove(reminder);
 
-        // ✅ Save updated reminders in JSON
+        // Save updated reminders in JSON
         List<Task> tasks = TaskStorage.loadTasks();
         for (Task t : tasks) {
             if (t.getTitle().equals(task.getTitle())) {
@@ -220,7 +218,7 @@ public class ManageRemindersController {
         }
         TaskStorage.saveTasks(tasks);
 
-        // ✅ Refresh UI
+        // Refresh UI
         loadReminders();
         showAlert("Success", "Reminder deleted successfully.");
     }

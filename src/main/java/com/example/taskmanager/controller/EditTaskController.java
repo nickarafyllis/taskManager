@@ -14,11 +14,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static com.example.taskmanager.utils.AlertUtil.*;
 
 public class EditTaskController {
-    private static final Logger LOGGER = Logger.getLogger(EditTaskController.class.getName());
 
     @FXML
     private TextField taskTitleInput;
@@ -43,15 +41,15 @@ public class EditTaskController {
     public void setTask(Task task) {
         this.task = task;
 
-        // ✅ Load categories & priorities from memory (not a separate storage class)
+        // Load categories & priorities from memory (not a separate storage class)
         loadCategories();
         loadPriorities();
 
-        // ✅ Set task details
+        // Set task details
         taskTitleInput.setText(task.getTitle());
         taskDescriptionInput.setText(task.getDescription());
 
-        // ✅ Set selected category & priority
+        // Set selected category & priority
         if (task.getCategory() != null) {
             categoryComboBox.getSelectionModel().select(task.getCategory().getName());
         }
@@ -74,7 +72,7 @@ public class EditTaskController {
                 }
                 categoryComboBox.setItems(FXCollections.observableArrayList(loadedCategories));
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error loading categories", e);
+                logError( "Error loading categories", e);
             }
         } else {
             categoryComboBox.setItems(FXCollections.observableArrayList());
@@ -92,7 +90,7 @@ public class EditTaskController {
                 }
                 priorityComboBox.setItems(FXCollections.observableArrayList(loadedPriorities));
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error loading priorities", e);
+                logError("Error loading priorities", e);
             }
         } else {
             priorityComboBox.setItems(FXCollections.observableArrayList());
@@ -138,13 +136,13 @@ public class EditTaskController {
             }
         }
 
-        // ✅ Save the modified task list
+        // Save the modified task list
         TaskStorage.saveTasks(tasks);
 
-        // ✅ Refresh UI
+        // Refresh UI
         mainController.refreshTaskList();
 
-        // ✅ Close the edit task window
+        // Close the edit task window
         Stage stage = (Stage) saveTaskButton.getScene().getWindow();
         stage.close();
     }
@@ -172,15 +170,5 @@ public class EditTaskController {
         Stage stage = (Stage) deleteTaskButton.getScene().getWindow();
         stage.close();
     }
-
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
 
 }
