@@ -1,7 +1,8 @@
 # 📝 Task Manager
 
 Task Manager is a JavaFX-based application designed to help users efficiently create, manage, and track tasks. The application provides features such as task categorization, priority management, reminders, and more.
-It was coded as an course project for the undergraduate course "Multimedia Technology" at ECE NTUA. 
+
+It was coded as a final project for the undergraduate course "Multimedia Technology" at ECE NTUA. 
 
 
 <img width="1218" height="549" alt="image" src="https://github.com/user-attachments/assets/f7702cbd-0068-417d-822f-ec5adddf2802" />
@@ -9,12 +10,12 @@ It was coded as an course project for the undergraduate course "Multimedia Techn
 
 ## 📌 Features
 
-✅ **Task Management:** Add, edit, delete, and track tasks.
-✅ **Reminders System:** Set automated reminders for tasks.
-✅ **Categories & Priorities:** Organize tasks with customizable categories and priorities.
-✅ **Search & Filter:** Quickly find tasks by title, category, or priority.
-✅ **Delayed Task Notifications:** Get alerts when tasks become overdue.
-✅ **Data Persistence:** Uses JSON files to store tasks, categories, and priorities.
+✅ **Task Management:** Add, edit, delete, and track tasks.  
+✅ **Reminders System:** Set automated reminders for tasks.  
+✅ **Categories & Priorities:** Organize tasks with customizable categories and priorities.  
+✅ **Search & Filter:** Quickly find tasks by title, category, or priority.  
+✅ **Delayed Task Notifications:** Get alerts when tasks become overdue.  
+✅ **Data Persistence:** Uses JSON files to store tasks, categories, and priorities.  
 
 ---
 
