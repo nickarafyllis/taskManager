@@ -1,6 +1,8 @@
+<img width="1218" height="549" alt="image" src="https://github.com/user-attachments/assets/f7702cbd-0068-417d-822f-ec5adddf2802" />
 # 📝 Task Manager
 
 Task Manager is a JavaFX-based application designed to help users efficiently create, manage, and track tasks. The application provides features such as task categorization, priority management, reminders, and more.
+It was coded as an course project for the undergraduate course "Multimedia Technology" at ECE NTUA. 
 
 ## 📌 Features
 
